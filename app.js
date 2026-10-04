@@ -2431,7 +2431,7 @@
           var coreUser = window.PolskifyCore ? window.PolskifyCore.getUser() : null;
           you = !!(coreUser && row.user_id === coreUser.id);
         }catch(e){}
-        return '<div class="leader-row'+(you?' you':'')+'">' +
+        return '<div class="leader-row'+(you?' you':'')+'" data-user="'+row.user_id+'">' +
           '<div class="leader-place">'+(pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos)+'</div>' +
           '<div class="leader-avatar">'+((row.display_name||'G').charAt(0).toUpperCase())+'</div>' +
           '<div class="leader-name"><div>'+(row.display_name||'Gracz')+(you?'<span>TY</span>':'')+'</div><small class="leader-profile-title">'+rankingTitle(row.profile_title)+'</small></div>' +
@@ -2645,4 +2645,126 @@
   });
   window.addEventListener('polskify:quiz-result',renderSeason);
   window.addEventListener('polskify:quiz-result',function(){ if(window.PolskifyProfileCoins && window.PolskifyProfileCoins.refreshTitles) window.PolskifyProfileCoins.refreshTitles(); });
+})();
+
+
+/* ===== POLSKIFY SOCIAL V4 ===== */
+(function(){
+  var TITLE_NAMES={
+    odkrywca:'🧭 Odkrywca',kartograf:'🗺️ Kartograf',mistrz_wojewodztw:'🏆 Mistrz Województw',
+    zloty_gracz:'🥇 Złoty Gracz',straznik_serii:'🔥 Strażnik Serii',mistrz_polskify:'👑 Mistrz Polskify',
+    legenda_polski:'⚡ Legenda Polski',administrator:'🛡️ Administrator'
+  };
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]});}
+  function title(v){return TITLE_NAMES[v]||TITLE_NAMES.odkrywca;}
+  function backend(){return window.PolskifyBackend&&window.PolskifyBackend.isConfigured&&window.PolskifyBackend.isConfigured();}
+
+  async function openPublicProfile(userId){
+    if(!backend()||!userId)return;
+    var modal=document.getElementById('public-profile-modal');
+    var box=document.getElementById('public-profile-content');
+    if(!modal||!box)return;
+    modal.hidden=false;
+    box.innerHTML='<p>Ładowanie profilu…</p>';
+    try{
+      var p=await window.PolskifyBackend.getPublicProfile(userId);
+      if(!p){box.innerHTML='<p>Nie znaleziono profilu.</p>';return;}
+      var fav=p.favorite_region?'<span>❤️ '+esc(p.favorite_region)+'</span>':'';
+      box.innerHTML=
+        '<div class="public-profile-head">'+
+          '<div class="public-profile-avatar">'+esc((p.display_name||'G').charAt(0).toUpperCase())+'</div>'+
+          '<div><h2 id="public-profile-name">'+esc(p.display_name||'Gracz')+'</h2>'+
+          '<div class="public-profile-title">'+esc(title(p.profile_title))+'</div>'+
+          '<div class="public-profile-badges">'+
+            (p.is_og?'<span>💎 OG</span>':'')+
+            '<span>'+(p.league==='gold'?'🥇':p.league==='silver'?'🥈':'🥉')+' '+esc(p.league||'bronze')+'</span>'+
+            fav+
+          '</div></div>'+
+        '</div>'+
+        '<div class="public-profile-stats">'+
+          '<div class="public-profile-stat"><b>'+Number(p.xp||0)+'</b><span>XP</span></div>'+
+          '<div class="public-profile-stat"><b>'+Number(p.weekly_xp||0)+'</b><span>XP tygodnia</span></div>'+
+          '<div class="public-profile-stat"><b>#'+(p.rank_position||'—')+'</b><span>Ranking Polski</span></div>'+
+          '<div class="public-profile-stat"><b>'+Number(p.streak_best||0)+'</b><span>Najlepsza seria</span></div>'+
+          '<div class="public-profile-stat"><b>'+Number(p.passed_count||0)+'/16</b><span>Województwa</span></div>'+
+          '<div class="public-profile-stat"><b>'+Number(p.best_weekly_xp||0)+'</b><span>Rekord tygodnia</span></div>'+
+        '</div>'+
+        (p.bio?'<div class="public-profile-bio">'+esc(p.bio)+'</div>':'')+
+        '<div class="social-player-actions" style="margin-top:16px">'+
+          (!p.is_friend?'<button type="button" data-add-friend="'+p.user_id+'">Dodaj do znajomych</button>':'<button type="button" disabled>✓ Znajomy</button>')+
+        '</div>';
+    }catch(err){
+      console.error(err); box.innerHTML='<p>Nie udało się wczytać profilu.</p>';
+    }
+  }
+
+  async function searchPlayers(){
+    var input=document.getElementById('social-player-search');
+    var box=document.getElementById('social-search-results');
+    if(!input||!box||!backend())return;
+    var q=input.value.trim();
+    if(!q){box.innerHTML='';return;}
+    box.innerHTML='<p>Szukanie…</p>';
+    try{
+      var rows=await window.PolskifyBackend.searchPlayers(q);
+      var me=window.PolskifyCore&&window.PolskifyCore.getUser?window.PolskifyCore.getUser():null;
+      box.innerHTML=(rows||[]).filter(function(x){return !me||x.user_id!==me.id;}).map(function(x){
+        return '<div class="social-player" data-user="'+x.user_id+'">'+
+          '<div class="social-player-avatar">'+esc((x.display_name||'G').charAt(0).toUpperCase())+'</div>'+
+          '<div class="social-player-main"><b>'+esc(x.display_name||'Gracz')+(x.is_og?' 💎':'')+'</b><small>'+esc(title(x.profile_title))+' · '+esc(x.league||'bronze')+'</small></div>'+
+          '<div class="social-player-actions"><button type="button" data-open-profile="'+x.user_id+'">Profil</button><button type="button" data-add-friend="'+x.user_id+'">Dodaj</button></div>'+
+        '</div>';
+      }).join('')||'<p>Brak graczy.</p>';
+    }catch(err){console.error(err);box.innerHTML='<p>Błąd wyszukiwania.</p>';}
+  }
+
+  async function loadFriends(){
+    if(!backend())return;
+    var fbox=document.getElementById('friends-list');
+    var rbox=document.getElementById('friend-requests');
+    var count=document.getElementById('friends-count');
+    try{
+      var friends=await window.PolskifyBackend.getFriends();
+      if(count)count.textContent=(friends||[]).length+' znajomych';
+      if(fbox)fbox.innerHTML=(friends||[]).map(function(x){
+        return '<div class="social-player"><div class="social-player-avatar">'+esc((x.display_name||'G').charAt(0).toUpperCase())+'</div>'+
+        '<div class="social-player-main"><b>'+esc(x.display_name||'Gracz')+'</b><small>'+esc(title(x.profile_title))+' · 🔥 '+Number(x.streak_best||0)+'</small></div>'+
+        '<div class="social-player-actions"><button type="button" data-open-profile="'+x.user_id+'">Profil</button></div></div>';
+      }).join('')||'<p>Nie masz jeszcze znajomych.</p>';
+      var req=await window.PolskifyBackend.getFriendRequests();
+      if(rbox)rbox.innerHTML=(req||[]).map(function(x){
+        return '<div class="social-player"><div class="social-player-avatar">'+esc((x.display_name||'G').charAt(0).toUpperCase())+'</div>'+
+        '<div class="social-player-main"><b>'+esc(x.display_name||'Gracz')+'</b><small>'+esc(title(x.profile_title))+'</small></div>'+
+        '<div class="social-player-actions"><button type="button" data-friend-accept="'+x.user_id+'">Akceptuj</button><button type="button" data-friend-reject="'+x.user_id+'">Odrzuć</button></div></div>';
+      }).join('')||'<p>Brak nowych zaproszeń.</p>';
+    }catch(err){console.error('friends',err);}
+  }
+
+  document.addEventListener('click',async function(e){
+    var close=e.target.closest&&e.target.closest('[data-profile-close]');
+    if(close){var m=document.getElementById('public-profile-modal');if(m)m.hidden=true;return;}
+    var open=e.target.closest&&e.target.closest('[data-open-profile]');
+    if(open){openPublicProfile(open.getAttribute('data-open-profile'));return;}
+    var row=e.target.closest&&e.target.closest('#ranking .leader-row[data-user]');
+    if(row&&!e.target.closest('button')){openPublicProfile(row.getAttribute('data-user'));return;}
+    var add=e.target.closest&&e.target.closest('[data-add-friend]');
+    if(add){
+      try{await window.PolskifyBackend.sendFriendRequest(add.getAttribute('data-add-friend'));await loadFriends();add.textContent='Wysłano ✓';add.disabled=true;}catch(err){alert('Nie udało się wysłać zaproszenia.');}
+      return;
+    }
+    var yes=e.target.closest&&e.target.closest('[data-friend-accept]');
+    if(yes){await window.PolskifyBackend.respondFriendRequest(yes.getAttribute('data-friend-accept'),true);await loadFriends();return;}
+    var no=e.target.closest&&e.target.closest('[data-friend-reject]');
+    if(no){await window.PolskifyBackend.respondFriendRequest(no.getAttribute('data-friend-reject'),false);await loadFriends();return;}
+  });
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('social-player-search-btn');
+    var inp=document.getElementById('social-player-search');
+    if(btn)btn.addEventListener('click',searchPlayers);
+    if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter')searchPlayers();});
+    setTimeout(loadFriends,900);
+  });
+
+  window.PolskifySocial={openPublicProfile:openPublicProfile,loadFriends:loadFriends};
 })();
