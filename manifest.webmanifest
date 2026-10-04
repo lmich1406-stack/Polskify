@@ -7,6 +7,12 @@
   "theme_color": "#0a0f15",
   "icons": [
     {
+      "src": "polskify-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
