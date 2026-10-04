@@ -398,6 +398,31 @@
       <div class="shop-grid" id="shop-grid"></div>
     </div>
 
+    <div class="profile-card social-card">
+      <div class="profile-card-head">
+        <div>
+          <div class="mono">SPOŁECZNOŚĆ</div>
+          <h3>Gracze i znajomi</h3>
+        </div>
+        <span id="friends-count">0 znajomych</span>
+      </div>
+      <div class="social-search-row">
+        <input id="social-player-search" type="search" maxlength="24" placeholder="Wyszukaj gracza po nicku">
+        <button class="btn" id="social-player-search-btn" type="button">Szukaj</button>
+      </div>
+      <div class="social-results" id="social-search-results"></div>
+      <div class="social-columns">
+        <div>
+          <h4>Zaproszenia</h4>
+          <div id="friend-requests" class="social-list"></div>
+        </div>
+        <div>
+          <h4>Znajomi</h4>
+          <div id="friends-list" class="social-list"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="profile-card">
       <div class="profile-card-head">
         <div>
@@ -450,6 +475,14 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="public-profile-modal" id="public-profile-modal" hidden>
+  <div class="public-profile-backdrop" data-profile-close></div>
+  <div class="public-profile-dialog" role="dialog" aria-modal="true" aria-labelledby="public-profile-name">
+    <button class="public-profile-close" type="button" data-profile-close>×</button>
+    <div id="public-profile-content"></div>
+  </div>
+</div>
 
 
 
