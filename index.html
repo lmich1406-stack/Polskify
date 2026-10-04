@@ -387,6 +387,49 @@
       <div class="title-picker" id="title-picker"></div>
     </div>
 
+
+    <div class="profile-card progression-card" id="progression-dashboard">
+      <div class="profile-card-head">
+        <div>
+          <div class="mono">PROGRESSION 4.0</div>
+          <h3>Mastery, historia i XP</h3>
+        </div>
+        <span id="perfect-run-count">🔥 0 Perfect Run</span>
+      </div>
+
+      <div class="progression-summary">
+        <div class="profile-stat"><b id="best-region-stat">—</b><span>Najlepszy region</span></div>
+        <div class="profile-stat"><b id="hardest-region-stat">—</b><span>Najtrudniejszy region</span></div>
+        <div class="profile-stat"><b id="mastery-max-stat">0</b><span>Mastery 5/5</span></div>
+      </div>
+
+      <div class="progression-section">
+        <div class="progression-section-head"><h4>Mapa opanowania</h4><span>Poziomy 1–5</span></div>
+        <div class="mastery-grid" id="mastery-grid"></div>
+      </div>
+
+      <div class="progression-section">
+        <div class="progression-section-head"><h4>XP — ostatnie 14 dni</h4><span id="xp-chart-total"></span></div>
+        <div class="xp-chart" id="xp-chart"></div>
+      </div>
+
+      <div class="progression-section">
+        <div class="progression-section-head"><h4>Historia quizów</h4><span>ostatnie 20</span></div>
+        <div class="quiz-history" id="quiz-history"></div>
+      </div>
+
+      <div class="progression-review-grid">
+        <div>
+          <div class="progression-section-head"><h4>Powtórki błędów</h4><button class="mini-btn" id="review-wrong-refresh" type="button">Odśwież</button></div>
+          <div id="review-wrong-list" class="review-list"></div>
+        </div>
+        <div>
+          <div class="progression-section-head"><h4>Ulubione pytania</h4><button class="mini-btn" id="review-fav-refresh" type="button">Odśwież</button></div>
+          <div id="review-fav-list" class="review-list"></div>
+        </div>
+      </div>
+    </div>
+
 <div class="profile-card shop-card">
       <div class="profile-card-head">
         <div>
@@ -462,6 +505,11 @@
       <div><span class="mono">QUIZY SPECJALNE</span><h2>Sprawdź całą Polskę</h2><p>Losowy quiz oraz osobne zestawy o stolicach, rzekach, sąsiadach, flagach i zabytkach.</p></div>
     </div>
     <div class="special-grid">
+      <button class="special-card challenge-card" data-special="daily-challenge"><b>☀️ Daily Challenge</b><span>Ten sam zestaw 10 pytań dla wszystkich dzisiaj</span></button>
+      <button class="special-card challenge-card" data-special="weekly-challenge"><b>📅 Weekly Challenge</b><span>Wspólny trudniejszy zestaw na cały tydzień</span></button>
+      <button class="special-card mode-card" data-mode-toggle="timer"><b>⏱️ Timer</b><span>Włącz licznik czasu podczas quizu</span></button>
+      <button class="special-card mode-card" data-mode-toggle="hard"><b>💀 Hard Mode</b><span>Timer + bonus XP za dobry wynik</span></button>
+
       <button class="special-card" data-special="random"><b>🎲 Losowy quiz</b><span>10 pytań z różnych województw</span></button>
       <button class="special-card" data-special="capitals"><b>🏙️ Stolice</b><span>Stolice województw i miasta</span></button>
       <button class="special-card" data-special="rivers"><b>🌊 Rzeki</b><span>Wisła, Odra, Warta i inne</span></button>
@@ -469,6 +517,11 @@
       <button class="special-card" data-special="flags"><b>🚩 Flagi</b><span>Polska i nasi sąsiedzi</span></button>
       <button class="special-card" data-special="landmarks"><b>🏰 Zabytki</b><span>Najważniejsze miejsca i miasta</span></button>
     </div>
+    <div class="challenge-board-wrap">
+      <div class="progression-section-head"><h3>Ranking wyzwania</h3><div class="theme-actions"><button class="mini-btn" id="daily-board-btn" type="button">Dzisiaj</button><button class="mini-btn" id="weekly-board-btn" type="button">Tydzień</button></div></div>
+      <div class="challenge-leaderboard" id="challenge-leaderboard"><p>Uruchom wyzwanie, aby zobaczyć ranking.</p></div>
+    </div>
+
   </div>
 </section>
 
