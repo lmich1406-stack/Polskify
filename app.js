@@ -2287,6 +2287,15 @@
         renderTitles();
         renderProfileTitleChip();
       }
+
+      // Od razu odśwież ranking, żeby każdy wybrany tytuł
+      // (nie tylko Odkrywca) pojawił się przy nicku.
+      try {
+        if (window.PolskifyRenderTop100) {
+          var activeFilter = document.querySelector('#ranking .league-filter button.active');
+          await window.PolskifyRenderTop100(activeFilter ? activeFilter.dataset.l : 'all');
+        }
+      } catch(e) { console.error('ranking title refresh', e); }
     }catch(err){ console.error(err); alert('Nie udało się ustawić tytułu.'); }
   }
 
