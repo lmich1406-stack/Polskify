@@ -2412,7 +2412,7 @@
 
   async function renderTop100(leagueId){
     var board = document.querySelector('#ranking .leaderboard');
-    if (!board || !window.PolskifyBackend || !(typeof backendEnabled==='function' && backendEnabled())) return;
+    if (!board || !window.PolskifyBackend || !window.PolskifyBackend.isConfigured || !window.PolskifyBackend.isConfigured()) return;
     try {
       var rows = await window.PolskifyBackend.loadTop100(leagueId);
       board.innerHTML = rows.map(function(row,idx){
