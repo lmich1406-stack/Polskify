@@ -3253,3 +3253,22 @@ body[data-theme="light"] .tab[aria-selected="true"]{color:white!important}
 .challenge-card{border-color:#40546a}
 @media(max-width:900px){.mastery-grid{grid-template-columns:repeat(2,1fr)}.progression-review-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.progression-summary{grid-template-columns:1fr}.mastery-grid{grid-template-columns:1fr}.quiz-history-row{grid-template-columns:1fr auto}.history-xp{grid-column:1/-1}}
+
+/* ===== POLSKIFY BRAND 2026 ===== */
+.head{align-items:center}
+.brand-icon-image.symbol-only{
+  width:78px;
+  height:78px;
+  flex:none;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.22));
+}
+.head h1{
+  background:linear-gradient(90deg,var(--ink) 0 72%,#f2b82f 72% 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+@media(max-width:620px){
+  .brand-icon-image.symbol-only{width:62px;height:62px}
+}
