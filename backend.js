@@ -374,6 +374,56 @@
     return Array.isArray(res.data) ? res.data[0] : res.data;
   }
 
+
+  async function searchPlayers(query) {
+    var sb = getClient(); if (!sb) return [];
+    var res = await sb.rpc('search_players',{p_query:String(query||'')});
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+
+  async function getPublicProfile(userId) {
+    var sb = getClient(); if (!sb) return null;
+    var res = await sb.rpc('get_public_profile',{p_user_id:userId});
+    if (res.error) throw res.error;
+    return Array.isArray(res.data) ? (res.data[0]||null) : res.data;
+  }
+
+  async function sendFriendRequest(userId) {
+    var sb = getClient(); if (!sb) throw new Error('Supabase nie jest skonfigurowany.');
+    var res = await sb.rpc('send_friend_request',{p_user_id:userId});
+    if (res.error) throw res.error;
+    return res.data;
+  }
+
+  async function respondFriendRequest(userId, accept) {
+    var sb = getClient(); if (!sb) throw new Error('Supabase nie jest skonfigurowany.');
+    var res = await sb.rpc('respond_friend_request',{p_requester_id:userId,p_accept:!!accept});
+    if (res.error) throw res.error;
+    return res.data;
+  }
+
+  async function getFriends() {
+    var sb = getClient(); if (!sb) return [];
+    var res = await sb.rpc('get_friends');
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+
+  async function getFriendRequests() {
+    var sb = getClient(); if (!sb) return [];
+    var res = await sb.rpc('get_friend_requests');
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+
+  async function updatePublicProfile(bio, favoriteRegion) {
+    var sb = getClient(); if (!sb) throw new Error('Supabase nie jest skonfigurowany.');
+    var res = await sb.rpc('update_public_profile',{p_bio:String(bio||''),p_favorite_region:favoriteRegion||null});
+    if (res.error) throw res.error;
+    return res.data;
+  }
+
   async function loadTop100(leagueId) {
     var sb = getClient();
     if (!sb) return [];
@@ -428,6 +478,13 @@
     setProfileTitle: setProfileTitle,
     claimDailyReward: claimDailyReward,
     buyShopItem: buyShopItem,
+    searchPlayers: searchPlayers,
+    getPublicProfile: getPublicProfile,
+    sendFriendRequest: sendFriendRequest,
+    respondFriendRequest: respondFriendRequest,
+    getFriends: getFriends,
+    getFriendRequests: getFriendRequests,
+    updatePublicProfile: updatePublicProfile,
     loadTop100: loadTop100,
     loadLeaderboard: loadLeaderboard
   };
