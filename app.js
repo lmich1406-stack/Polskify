@@ -252,7 +252,7 @@
   };
 
   var qEl = pQuiz;
-  var currentRegion = null, quizMode = 'regional', QUESTIONS = [], qi = 0, score = 0, answered = false, results = [], missed = [], secureQuizSession = null, currentSpecialKind = null;
+  var currentRegion = null, quizMode = 'regional', QUESTIONS = [], qi = 0, score = 0, answered = false, results = [], missed = [], secureQuizSession = null, currentSpecialKind = null, quizCombo = 0, bestQuizCombo = 0, quizStartedAt = 0, timerModeActive = false, hardModeActive = false, challengeTypeActive = null;
   var PASS_PERCENT = 50;
   var PASSED_KEY = 'polskify-passed-regions-v1';
   var OLD_PASSED_KEY = 'szpajza-passed-regions-v1';
@@ -1196,9 +1196,9 @@
     qEl.innerHTML =
       '<div class="card-box">' +
         '<div class="region-title"><div><span class="mono">' + (quizMode === 'regional' ? 'Quiz wojewódzki' : 'Quiz specjalny') + '</span><h2>' + escapeHtml(currentRegion.name) + '</h2><p class="region-desc">' + escapeHtml(currentRegion.desc) + '</p></div><button class="btn ghost" id="back-map" type="button">← Mapa</button></div>' +
-        '<div class="qhead"><span class="mono">Pytanie ' + (qi + 1) + ' z ' + QUESTIONS.length + '</span><span class="mono">Wynik ' + score + '</span></div>' +
+        '<div class="qhead"><span class="mono">Pytanie ' + (qi + 1) + ' z ' + QUESTIONS.length + '</span><span class="quiz-live-stats"><span class="mono" id="quiz-timer-chip">' + ((timerModeActive||hardModeActive)?'⏱ 0:00':'') + '</span><span class="mono" id="quiz-combo-chip">' + (quizCombo>=2?('🔥 x'+quizCombo):'') + '</span><span class="mono">Wynik ' + score + '</span></span></div>' +
         segs(qi) +
-        '<h3 class="question" id="q-title" tabindex="-1">' + escapeHtml(q.q) + '</h3>' +
+        '<div class="question-tools"><h3 class="question" id="q-title" tabindex="-1">' + escapeHtml(q.q) + '</h3>' + (q.id?'<button class="favorite-question-btn" type="button" data-favorite-question="'+escapeHtml(q.id)+'" title="Dodaj do ulubionych">☆</button>':'') + '</div>' +
         '<div class="opts">' + order.map(function (k, n) {
           return '<button class="opt" type="button" data-k="' + k + '"><span class="key">' + 'ABCD'.charAt(n) + '</span><span>' + escapeHtml(q.a[k]) + '</span></button>';
         }).join('') + '</div>' +
@@ -1220,6 +1220,7 @@
 
     var xpEarned = (score * 10) + (passed ? 25 : 0);
     var totalXP;
+    var hardBonus = 0;
 
     if (backendEnabled() && currentUser && currentUser.id) {
       try {
@@ -1236,6 +1237,21 @@
         }
         xpEarned = Number(reward.xp_awarded || 0);
         totalXP = Number(reward.total_xp || 0);
+
+        if (hardModeActive && secureQuizSession && window.PolskifyBackend.awardHardModeBonus) {
+          try {
+            hardBonus = await window.PolskifyBackend.awardHardModeBonus(secureQuizSession);
+            xpEarned += Number(hardBonus || 0);
+            totalXP += Number(hardBonus || 0);
+          } catch (bonusErr) {
+            console.error('Hard mode bonus:', bonusErr);
+          }
+        }
+
+        if (challengeTypeActive && secureQuizSession && window.PolskifyBackend.recordChallengeResult) {
+          try { await window.PolskifyBackend.recordChallengeResult(secureQuizSession, challengeTypeActive); }
+          catch (challengeErr) { console.error('Challenge result:', challengeErr); }
+        }
 
         currentUser.xp = totalXP;
         currentUser.league = currentUser.league || {};
@@ -1286,6 +1302,9 @@
         '<div class="xp-earned"><strong>' + (xpEarned > 0 ? ('+' + xpEarned + ' XP') : '0 XP') + '</strong><span>' + (xpEarned > 0 ? ('Masz teraz ' + totalXP + ' XP · Poziom ' + newLevel + ' · ' + levelName(newLevel) + (nextXPGoal ? ' · następny próg: ' + nextXPGoal + ' XP' : ' · MAX')) : 'Za ten region otrzymałeś już dziś XP. Wynik quizu nadal się liczy.') + '</span></div>' +
         (streakWasNewToday ? '<div class="xp-earned"><strong>🔥 Seria!</strong><span>Dzisiejszy quiz został zaliczony do codziennej serii.</span></div>' : '') +
         (earnedNow.length ? '<div class="xp-earned"><strong>Nowa odznaka!</strong><span>' + earnedNow.map(function(id){ var b = BADGES.find(function(x){return x.id===id;}); return b ? escapeHtml(b.name) : ''; }).join(' · ') + '</span></div>' : '') +
+        (bestQuizCombo >= 2 ? '<div class="xp-earned"><strong>🔥 Combo x' + bestQuizCombo + '</strong><span>Najlepsza seria poprawnych odpowiedzi w tym quizie.</span></div>' : '') +
+        (percent === 100 ? '<div class="xp-earned"><strong>💯 Perfect Run!</strong><span>10/10 — bezbłędny quiz.</span></div>' : '') +
+        (hardBonus > 0 ? '<div class="xp-earned"><strong>💀 Hard Mode +' + hardBonus + ' XP</strong><span>Bonus za dobry wynik w trybie trudnym.</span></div>' : '') +
         '<div class="result-status ' + (passed ? 'passed' : 'failed') + '">' +
           '<strong>' + (passed ? '✓ QUIZ ZALICZONY' : '✕ QUIZ NIEZALICZONY') + '</strong>' +
           '<span>' + (passed ? 'Masz co najmniej ' + PASS_PERCENT + '%. Województwo zostaje podświetlone na zielono na mapie.' : 'Do zaliczenia potrzebujesz co najmniej ' + PASS_PERCENT + '%. Spróbuj jeszcze raz!') + '</span>' +
@@ -1305,7 +1324,13 @@
           xpEarned: xpEarned,
           totalXP: totalXP,
           passed: passed,
-          regionCode: currentRegion && currentRegion.code ? currentRegion.code : ''
+          regionCode: currentRegion && currentRegion.code ? currentRegion.code : '',
+          quizName: currentRegion && currentRegion.name ? currentRegion.name : '',
+          mode: hardModeActive ? 'hard' : (timerModeActive ? 'timer' : (challengeTypeActive || quizMode || 'normal')),
+          combo: bestQuizCombo,
+          elapsedMs: quizStartedAt ? (Date.now() - quizStartedAt) : 0,
+          questionIds: QUESTIONS.map(function(q){ return q.id || ''; }).filter(Boolean),
+          wrongIds: missed.map(function(q){ return q.id || ''; }).filter(Boolean)
         }
       }));
     } catch (e) {}
@@ -1318,6 +1343,7 @@
     currentRegion = REGIONS[code];
     currentRegion.code = code;
     qi = 0; score = 0; results = []; missed = [];
+    quizCombo = 0; bestQuizCombo = 0; quizStartedAt = Date.now(); challengeTypeActive = null;
     secureQuizSession = null;
 
     if (backendEnabled() && currentUser && currentUser.id && window.PolskifyBackend.startSecureQuiz) {
@@ -1417,6 +1443,7 @@
     quizMode = kind === 'random' ? 'random' : 'special';
     currentRegion = {name:pack.name, desc:'Quiz specjalny Polskify', code:pack.code};
     qi=0; score=0; results=[]; missed=[];
+    quizCombo=0; bestQuizCombo=0; quizStartedAt=Date.now(); challengeTypeActive=null;
     secureQuizSession = null;
 
     if (backendEnabled() && currentUser && currentUser.id && window.PolskifyBackend.startSecureQuiz) {
@@ -1636,7 +1663,14 @@
       }
 
       results.push(ok);
-      if (ok) score++; else missed.push(q);
+      if (ok) {
+        score++;
+        quizCombo++;
+        bestQuizCombo = Math.max(bestQuizCombo, quizCombo);
+      } else {
+        quizCombo = 0;
+        missed.push(q);
+      }
       qEl.querySelectorAll('.opt').forEach(function (b) {
         var bk = +b.getAttribute('data-k');
         b.disabled = true;
@@ -1945,6 +1979,37 @@
         };
       });
       return out;
+    },
+    startProgressionChallenge: async function(type) {
+      if (!backendEnabled() || !currentUser || !currentUser.id || !window.PolskifyBackend.startProgressionChallenge) throw new Error('Zaloguj się, aby zagrać wyzwanie.');
+      var pack = await window.PolskifyBackend.startProgressionChallenge(type);
+      challengeTypeActive = type;
+      quizMode = 'challenge';
+      currentSpecialKind = null;
+      currentRegion = {name:type==='daily'?'Daily Challenge':'Weekly Challenge',desc:'Wspólny zestaw pytań dla wszystkich graczy.',code:pack.challenge_key};
+      qi=0; score=0; results=[]; missed=[]; quizCombo=0; bestQuizCombo=0; quizStartedAt=Date.now();
+      secureQuizSession = pack.session_id;
+      QUESTIONS = (pack.questions||[]).map(function(q){ return {id:q.id,q:q.q,a:q.a,c:null}; });
+      show('quiz'); renderQuiz();
+      return true;
+    },
+    startRandomMode: async function(options) {
+      options=options||{};
+      timerModeActive=!!options.timer;
+      hardModeActive=!!options.hard;
+      await startSpecialQuiz('random');
+      timerModeActive=!!options.timer;
+      hardModeActive=!!options.hard;
+      quizStartedAt=Date.now();
+      renderQuiz();
+    },
+    setModeOptions: function(options) {
+      options=options||{};
+      timerModeActive=!!options.timer;
+      hardModeActive=!!options.hard;
+    },
+    getQuizLive: function() {
+      return {combo:quizCombo,bestCombo:bestQuizCombo,startedAt:quizStartedAt,timer:timerModeActive,hard:hardModeActive,challenge:challengeTypeActive};
     },
     getUser: function () {
       if (!currentUser) return null;
