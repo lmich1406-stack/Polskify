@@ -375,6 +375,79 @@
   }
 
 
+
+  async function recordQuizAttempt(payload) {
+    var sb=getClient(); if(!sb) return false;
+    var res=await sb.rpc('record_quiz_attempt',{
+      p_quiz_code:payload.quizCode||'',
+      p_quiz_name:payload.quizName||'',
+      p_score:Number(payload.score||0),
+      p_total:Number(payload.total||10),
+      p_xp_earned:Number(payload.xpEarned||0),
+      p_mode:payload.mode||'normal',
+      p_question_ids:payload.questionIds||null,
+      p_wrong_ids:payload.wrongIds||null
+    });
+    if(res.error) throw res.error;
+    return !!res.data;
+  }
+
+  async function getProgressionDashboard(){
+    var sb=getClient(); if(!sb) return {};
+    var res=await sb.rpc('get_progression_dashboard');
+    if(res.error) throw res.error;
+    return res.data||{};
+  }
+
+  async function getQuizHistory(){
+    var sb=getClient(); if(!sb) return [];
+    var res=await sb.rpc('get_quiz_history');
+    if(res.error) throw res.error;
+    return res.data||[];
+  }
+
+  async function toggleFavoriteQuestion(questionId){
+    var sb=getClient(); if(!sb) return false;
+    var res=await sb.rpc('toggle_favorite_question',{p_question_id:questionId});
+    if(res.error) throw res.error;
+    return !!res.data;
+  }
+
+  async function getReviewQuestions(onlyFavorites){
+    var sb=getClient(); if(!sb) return [];
+    var res=await sb.rpc('get_review_questions',{p_only_favorites:!!onlyFavorites});
+    if(res.error) throw res.error;
+    return res.data||[];
+  }
+
+  async function startProgressionChallenge(type){
+    var sb=getClient(); if(!sb) throw new Error('Supabase nie jest skonfigurowany.');
+    var res=await sb.rpc('start_progression_challenge',{p_type:type});
+    if(res.error) throw res.error;
+    return res.data;
+  }
+
+  async function recordChallengeResult(sessionId,type){
+    var sb=getClient(); if(!sb) return false;
+    var res=await sb.rpc('record_challenge_result',{p_session_id:sessionId,p_type:type});
+    if(res.error) throw res.error;
+    return !!res.data;
+  }
+
+  async function getChallengeLeaderboard(type){
+    var sb=getClient(); if(!sb) return [];
+    var res=await sb.rpc('get_challenge_leaderboard',{p_type:type});
+    if(res.error) throw res.error;
+    return res.data||[];
+  }
+
+  async function awardHardModeBonus(sessionId){
+    var sb=getClient(); if(!sb) return 0;
+    var res=await sb.rpc('award_hard_mode_bonus',{p_session_id:sessionId});
+    if(res.error) throw res.error;
+    return Number(res.data||0);
+  }
+
   async function searchPlayers(query) {
     var sb = getClient(); if (!sb) return [];
     var res = await sb.rpc('search_players',{p_query:String(query||'')});
@@ -478,6 +551,15 @@
     setProfileTitle: setProfileTitle,
     claimDailyReward: claimDailyReward,
     buyShopItem: buyShopItem,
+    recordQuizAttempt: recordQuizAttempt,
+    getProgressionDashboard: getProgressionDashboard,
+    getQuizHistory: getQuizHistory,
+    toggleFavoriteQuestion: toggleFavoriteQuestion,
+    getReviewQuestions: getReviewQuestions,
+    startProgressionChallenge: startProgressionChallenge,
+    recordChallengeResult: recordChallengeResult,
+    getChallengeLeaderboard: getChallengeLeaderboard,
+    awardHardModeBonus: awardHardModeBonus,
     searchPlayers: searchPlayers,
     getPublicProfile: getPublicProfile,
     sendFriendRequest: sendFriendRequest,
