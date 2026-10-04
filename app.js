@@ -41,7 +41,12 @@
       VIEWS[k][1].hidden = !on;
     });
     if (which === 'badges') renderBadges();
-    if (which === 'ranking') renderLeague();
+    if (which === 'ranking') {
+      renderLeague();
+      setTimeout(function(){
+        if (window.PolskifyRenderTop100) window.PolskifyRenderTop100('all');
+      }, 0);
+    }
     if (which === 'profile') {
       if (window.PolskifyProfileReload) window.PolskifyProfileReload();
       else if (window.PolskifyProfileRender) window.PolskifyProfileRender();
@@ -2390,6 +2395,21 @@
     });
   }
 
+  var RANKING_TITLES = {
+    odkrywca:'🧭 Odkrywca',
+    kartograf:'🗺️ Kartograf',
+    mistrz_wojewodztw:'🏆 Mistrz Województw',
+    zloty_gracz:'🥇 Złoty Gracz',
+    straznik_serii:'🔥 Strażnik Serii',
+    mistrz_polskify:'👑 Mistrz Polskify',
+    legenda_polski:'⚡ Legenda Polski',
+    administrator:'🛡️ Administrator'
+  };
+
+  function rankingTitle(id){
+    return RANKING_TITLES[id] || RANKING_TITLES.odkrywca;
+  }
+
   async function renderTop100(leagueId){
     var board = document.querySelector('#ranking .leaderboard');
     if (!board || !window.PolskifyBackend || !(typeof backendEnabled==='function' && backendEnabled())) return;
@@ -2405,12 +2425,14 @@
         return '<div class="leader-row'+(you?' you':'')+'">' +
           '<div class="leader-place">'+(pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos)+'</div>' +
           '<div class="leader-avatar">'+((row.display_name||'G').charAt(0).toUpperCase())+'</div>' +
-          '<div class="leader-name">'+(row.display_name||'Gracz')+(you?'<span>TY</span>':'')+'</div>' +
+          '<div class="leader-name"><div>'+(row.display_name||'Gracz')+(you?'<span>TY</span>':'')+'</div><small class="leader-profile-title">'+rankingTitle(row.profile_title)+'</small></div>' +
           '<div class="leader-xp">'+Number(row.weekly_xp||0)+' XP</div>' +
         '</div>';
       }).join('') || '<div style="padding:20px;color:#91a3b6">Brak graczy w tej lidze.</div>';
     } catch(err){ console.error('top100',err); }
   }
+
+  window.PolskifyRenderTop100 = renderTop100;
 
   // Track daily and lifetime stats after each finished quiz by observing results screen changes.
   function installResultObserver(){
