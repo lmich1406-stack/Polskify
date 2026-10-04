@@ -377,12 +377,9 @@
   async function loadTop100(leagueId) {
     var sb = getClient();
     if (!sb) return [];
-    var q = sb.from('league_entries')
-      .select('user_id, display_name, weekly_xp, league, week_key')
-      .order('weekly_xp', { ascending:false })
-      .limit(100);
-    if (leagueId && leagueId !== 'all') q = q.eq('league', leagueId);
-    var res = await q;
+    var res = await sb.rpc('load_top100_with_titles', {
+      p_league: leagueId && leagueId !== 'all' ? leagueId : null
+    });
     if (res.error) throw res.error;
     return res.data || [];
   }
