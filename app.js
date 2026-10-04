@@ -504,9 +504,28 @@
     }
   }
 
-  function updateDailyStreak() {
+  async function updateDailyStreak() {
     var streak = getStreak();
     var today = localDayKey();
+
+    if (backendEnabled() && currentUser && currentUser.id && window.PolskifyBackend.touchDailyStreak) {
+      try {
+        var remote = await window.PolskifyBackend.touchDailyStreak();
+        if (remote) {
+          streak.count = Number(remote.streak_count || 0);
+          streak.best = Number(remote.streak_best || 0);
+          streak.lastDay = remote.streak_last_day || '';
+          streak.activeDays = Array.isArray(remote.active_days) ? remote.active_days : [];
+          currentUser.streak = streak;
+          accounts[currentUser.email] = currentUser;
+          try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); } catch (e) {}
+          refreshStreakUI();
+          return !!remote.changed_today;
+        }
+      } catch (err) {
+        console.error('Streak RPC error:', err);
+      }
+    }
 
     if (streak.lastDay === today) {
       refreshStreakUI();
@@ -1207,7 +1226,7 @@
   }
 
   async function renderResult() {
-    var streakWasNewToday = updateDailyStreak();
+    var streakWasNewToday = await updateDailyStreak();
     var badgeBefore = badgeSnapshot();
     var percent = Math.round((score / QUESTIONS.length) * 100);
     var passed = percent >= PASS_PERCENT;
