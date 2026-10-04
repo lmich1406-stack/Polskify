@@ -376,6 +376,14 @@
 
 
 
+  async function touchDailyStreak() {
+    var sb=getClient();
+    if(!sb) return null;
+    var res=await sb.rpc('touch_daily_streak');
+    if(res.error) throw res.error;
+    return Array.isArray(res.data) ? (res.data[0]||null) : res.data;
+  }
+
   async function recordQuizAttempt(payload) {
     var sb=getClient(); if(!sb) return false;
     var res=await sb.rpc('record_quiz_attempt',{
@@ -551,6 +559,7 @@
     setProfileTitle: setProfileTitle,
     claimDailyReward: claimDailyReward,
     buyShopItem: buyShopItem,
+    touchDailyStreak: touchDailyStreak,
     recordQuizAttempt: recordQuizAttempt,
     getProgressionDashboard: getProgressionDashboard,
     getQuizHistory: getQuizHistory,
