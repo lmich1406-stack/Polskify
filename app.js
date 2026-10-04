@@ -2833,3 +2833,184 @@
 
   window.PolskifySocial={openPublicProfile:openPublicProfile,loadFriends:loadFriends};
 })();
+
+
+/* ===== POLSKIFY PROGRESSION 4.0 UI ===== */
+(function(){
+  var REGION_NAMES={
+    ZP:'Zachodniopomorskie',PM:'Pomorskie',WN:'Warmińsko-mazurskie',PD:'Podlaskie',
+    LB:'Lubuskie',KP:'Kujawsko-pomorskie',WP:'Wielkopolskie',MZ:'Mazowieckie',
+    LD:'Łódzkie',LU:'Lubelskie',DS:'Dolnośląskie',OP:'Opolskie',SK:'Świętokrzyskie',
+    SL:'Śląskie',MA:'Małopolskie',PK:'Podkarpackie'
+  };
+  var TITLE_NAMES={
+    odkrywca:'🧭 Odkrywca',kartograf:'🗺️ Kartograf',mistrz_wojewodztw:'🏆 Mistrz Województw',
+    zloty_gracz:'🥇 Złoty Gracz',straznik_serii:'🔥 Strażnik Serii',mistrz_polskify:'👑 Mistrz Polskify',
+    legenda_polski:'⚡ Legenda Polski',administrator:'🛡️ Administrator'
+  };
+  var timerTick=null;
+
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]});}
+  function configured(){return !!(window.PolskifyBackend&&window.PolskifyBackend.isConfigured&&window.PolskifyBackend.isConfigured());}
+  function title(v){return TITLE_NAMES[v]||TITLE_NAMES.odkrywca;}
+
+  async function loadProgression(){
+    if(!configured())return;
+    try{
+      var d=await window.PolskifyBackend.getProgressionDashboard();
+      d=d||{};
+      var regions=Array.isArray(d.regions)?d.regions:[];
+      var hist=Array.isArray(d.history)?d.history:[];
+      var chart=Array.isArray(d.chart)?d.chart:[];
+
+      var best=regions.length?regions.slice().sort(function(a,b){return Number(b.best||0)-Number(a.best||0);})[0]:null;
+      var hard=regions.length?regions.slice().sort(function(a,b){return Number(a.avg||0)-Number(b.avg||0);})[0]:null;
+      var mastery5=regions.filter(function(x){return Number(x.mastery||0)>=5;}).length;
+
+      var el=document.getElementById('best-region-stat'); if(el)el.textContent=best?(REGION_NAMES[best.code]||best.code)+' '+Number(best.best||0)+'%':'—';
+      el=document.getElementById('hardest-region-stat'); if(el)el.textContent=hard?(REGION_NAMES[hard.code]||hard.code)+' '+Number(hard.avg||0)+'%':'—';
+      el=document.getElementById('mastery-max-stat'); if(el)el.textContent=mastery5;
+      el=document.getElementById('perfect-run-count'); if(el)el.textContent='💯 '+Number(d.perfect_runs||0)+' Perfect Run';
+
+      var grid=document.getElementById('mastery-grid');
+      if(grid){
+        var by={};regions.forEach(function(x){by[x.code]=x;});
+        grid.innerHTML=Object.keys(REGION_NAMES).map(function(code){
+          var x=by[code]||{mastery:0,best:0,attempts:0};
+          var lv=Number(x.mastery||0);
+          return '<div class="mastery-item"><b>'+esc(REGION_NAMES[code])+'</b><small>Najlepiej '+Number(x.best||0)+'% · '+Number(x.attempts||0)+' prób</small><div class="mastery-stars">'+('★'.repeat(lv))+('☆'.repeat(Math.max(0,5-lv)))+'</div></div>';
+        }).join('');
+      }
+
+      renderChart(chart);
+      renderHistory(hist);
+    }catch(err){console.error('progression dashboard',err);}
+  }
+
+  function renderChart(rows){
+    var box=document.getElementById('xp-chart'); if(!box)return;
+    var map={};(rows||[]).forEach(function(x){map[String(x.day)]=Number(x.xp||0);});
+    var days=[];var max=1;var total=0;
+    for(var i=13;i>=0;i--){
+      var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);
+      var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      var xp=map[key]||0;max=Math.max(max,xp);total+=xp;
+      days.push({label:String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'),xp:xp});
+    }
+    box.innerHTML=days.map(function(x){
+      var h=Math.max(3,Math.round((x.xp/max)*120));
+      return '<div class="xp-bar-wrap" title="'+x.xp+' XP"><div class="xp-bar" style="height:'+h+'px"></div><small>'+x.label+'</small></div>';
+    }).join('');
+    var t=document.getElementById('xp-chart-total');if(t)t.textContent=total+' XP';
+  }
+
+  function renderHistory(rows){
+    var box=document.getElementById('quiz-history');if(!box)return;
+    box.innerHTML=(rows||[]).map(function(x){
+      var dt=new Date(x.created_at);
+      return '<div class="quiz-history-row"><div><b>'+esc(x.quiz_name||x.quiz_code||'Quiz')+'</b><small>'+dt.toLocaleString('pl-PL')+' · '+esc(x.mode||'normal')+'</small></div><div class="history-score">'+Number(x.score||0)+'/'+Number(x.total||10)+' · '+Number(x.percent||0)+'%</div><div class="history-xp">+'+Number(x.xp_earned||0)+' XP</div></div>';
+    }).join('')||'<p>Historia pojawi się po ukończeniu kolejnych quizów.</p>';
+  }
+
+  async function loadReview(favorites){
+    if(!configured())return;
+    var box=document.getElementById(favorites?'review-fav-list':'review-wrong-list');
+    if(!box)return;
+    try{
+      var rows=await window.PolskifyBackend.getReviewQuestions(favorites);
+      box.innerHTML=(rows||[]).map(function(x){
+        return '<div class="review-item"><b>'+esc(x.question)+'</b><small>'+(favorites?'★ Ulubione':'Błędy: '+Number(x.wrong_count||0))+'</small></div>';
+      }).join('')||'<p>'+(favorites?'Brak ulubionych pytań.':'Brak pytań do powtórki.')+'</p>';
+    }catch(err){console.error('review questions',err);}
+  }
+
+  async function loadChallengeBoard(type){
+    var box=document.getElementById('challenge-leaderboard');if(!box||!configured())return;
+    box.innerHTML='<p>Ładowanie rankingu…</p>';
+    try{
+      var rows=await window.PolskifyBackend.getChallengeLeaderboard(type);
+      box.innerHTML=(rows||[]).map(function(x){
+        var p=Number(x.rank_position||0);
+        return '<div class="challenge-row"><div>'+(p===1?'🥇':p===2?'🥈':p===3?'🥉':p)+'</div><div><b>'+esc(x.display_name||'Gracz')+'</b><small>'+esc(title(x.profile_title))+'</small></div><strong>'+Number(x.score||0)+'/10</strong></div>';
+      }).join('')||'<p>Jeszcze nikt nie ukończył tego wyzwania.</p>';
+    }catch(err){console.error('challenge board',err);box.innerHTML='<p>Nie udało się pobrać rankingu.</p>';}
+  }
+
+  function startClock(){
+    clearInterval(timerTick);
+    timerTick=setInterval(function(){
+      if(!window.PolskifyCore||!window.PolskifyCore.getQuizLive)return;
+      var st=window.PolskifyCore.getQuizLive();
+      var chip=document.getElementById('quiz-timer-chip');
+      if(!chip||!(st.timer||st.hard))return;
+      var sec=Math.max(0,Math.floor((Date.now()-Number(st.startedAt||Date.now()))/1000));
+      chip.textContent='⏱ '+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+      var combo=document.getElementById('quiz-combo-chip');
+      if(combo)combo.textContent=Number(st.combo||0)>=2?'🔥 x'+Number(st.combo||0):'';
+    },500);
+  }
+
+  document.addEventListener('click',async function(e){
+    var fav=e.target.closest&&e.target.closest('[data-favorite-question]');
+    if(fav&&configured()){
+      try{
+        var on=await window.PolskifyBackend.toggleFavoriteQuestion(fav.getAttribute('data-favorite-question'));
+        fav.textContent=on?'★':'☆';fav.classList.toggle('saved',on);
+        loadReview(true);
+      }catch(err){console.error(err);}
+      return;
+    }
+
+    var special=e.target.closest&&e.target.closest('[data-special]');
+    if(special){
+      var kind=special.getAttribute('data-special');
+      if(kind==='daily-challenge'||kind==='weekly-challenge'){
+        try{
+          await window.PolskifyCore.startProgressionChallenge(kind==='daily-challenge'?'daily':'weekly');
+          startClock();
+        }catch(err){alert(err.message||'Nie udało się uruchomić wyzwania.');}
+        return;
+      }
+    }
+
+    var mode=e.target.closest&&e.target.closest('[data-mode-toggle]');
+    if(mode){
+      var v=mode.getAttribute('data-mode-toggle');
+      document.querySelectorAll('[data-mode-toggle]').forEach(function(x){x.classList.remove('active');});
+      mode.classList.add('active');
+      if(window.PolskifyCore&&window.PolskifyCore.startRandomMode){
+        await window.PolskifyCore.startRandomMode({timer:true,hard:v==='hard'});
+        startClock();
+      }
+      return;
+    }
+
+    if(e.target.closest&&e.target.closest('#daily-board-btn')){loadChallengeBoard('daily');return;}
+    if(e.target.closest&&e.target.closest('#weekly-board-btn')){loadChallengeBoard('weekly');return;}
+    if(e.target.closest&&e.target.closest('#review-wrong-refresh')){loadReview(false);return;}
+    if(e.target.closest&&e.target.closest('#review-fav-refresh')){loadReview(true);return;}
+  });
+
+  window.addEventListener('polskify:quiz-result',async function(ev){
+    var d=ev.detail||{};
+    if(configured()&&window.PolskifyBackend.recordQuizAttempt){
+      try{
+        await window.PolskifyBackend.recordQuizAttempt({
+          quizCode:d.regionCode||'',
+          quizName:d.quizName||'Quiz',
+          score:d.score||0,total:d.total||10,xpEarned:d.xpEarned||0,
+          mode:d.mode||'normal',questionIds:d.questionIds||[],wrongIds:d.wrongIds||[]
+        });
+      }catch(err){console.error('record attempt',err);}
+    }
+    loadProgression();loadReview(false);loadReview(true);
+    if(d.mode==='daily'||d.mode==='weekly'||String(d.regionCode||'').indexOf('DAILY:')===0||String(d.regionCode||'').indexOf('WEEKLY:')===0){
+      loadChallengeBoard(String(d.regionCode||'').indexOf('WEEKLY:')===0?'weekly':'daily');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(function(){loadProgression();loadReview(false);loadReview(true);loadChallengeBoard('daily');},1200);
+    startClock();
+  });
+})();
