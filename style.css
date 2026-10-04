@@ -1,0 +1,3189 @@
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Layout: jedna wąska kolumna z interaktywną mapą Polski, quizami regionów i poziomem historycznym. */
+:root {
+  --map-ink: #2f455d;
+  --map-surface: #f3f6f9;
+  --map-highlight: #2f6f9f;
+  --bg: #eceff4;
+  --surface: #ffffff;
+  --surface-2: #e2e8f1;
+  --ink: #121c2b;
+  --muted: #546174;
+  --line: #cdd5e0;
+  --blue: #1c4f9f;
+  --on-blue: #ffffff;
+  --blue-soft: #dbe6f8;
+  --gold: #f0b20a;
+  --on-gold: #2a1f00;
+  --good: #17794a;
+  --good-soft: #d7f0e2;
+  --bad: #b83a2c;
+  --bad-soft: #f8dcd7;
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b;
+    --surface: #171e28;
+    --surface-2: #202938;
+    --ink: #e8edf4;
+    --muted: #9aa8ba;
+    --line: #2c3748;
+    --blue: #7aa7ef;
+    --on-blue: #0b1626;
+    --blue-soft: #1d2d4a;
+    --gold: #f5bf2a;
+    --on-gold: #2a1f00;
+    --good: #52c98a;
+    --good-soft: #15332a;
+    --bad: #ff8272;
+    --bad-soft: #3a1d1a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b;
+  --surface: #171e28;
+  --surface-2: #202938;
+  --ink: #e8edf4;
+  --muted: #9aa8ba;
+  --line: #2c3748;
+  --blue: #7aa7ef;
+  --on-blue: #0b1626;
+  --blue-soft: #1d2d4a;
+  --gold: #f5bf2a;
+  --on-gold: #2a1f00;
+  --good: #52c98a;
+  --good-soft: #15332a;
+  --bad: #ff8272;
+  --bad-soft: #3a1d1a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.wrap { max-width: 44rem; margin-inline: auto; padding-inline: 16px; padding-block: 28px 48px; }
+
+/* Nagłówek */
+.head { display: flex; align-items: flex-end; gap: 16px; }
+.head svg { flex: none; width: 64px; height: 64px; color: var(--gold); }
+.head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 11vw, 4.2rem);
+  line-height: .9;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.lead { margin: 12px 0 0; color: var(--muted); max-width: 40ch; }
+.flag { margin-top: 18px; height: 10px; background: linear-gradient(var(--gold) 50%, var(--blue) 50%); border-radius: 2px; }
+
+/* Zakładki */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 22px; padding: 4px; background: #dfe6ee; border: 1px solid #cdd6e1; border-radius: 11px; }
+.tab { min-height: 44px; border: 0; border-radius: 8px; background: transparent; font-weight: 700; color: var(--muted); transition: background .16s ease, color .16s ease; }
+.tab[aria-selected="true"] { background: #213c57; color: #fff; box-shadow: 0 3px 10px rgba(33,60,87,.16); }
+.home-h { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.9rem, 7.5vw, 2.8rem); line-height: 1; text-transform: uppercase; text-wrap: balance; }
+.picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 12px; margin-top: 16px; }
+.pick { display: grid; gap: 8px; min-width: 0; padding: 18px; text-align: left; background: var(--surface); color: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; }
+.pick:hover { border-color: var(--blue); }
+.pick .big { font-family: var(--font-display); font-weight: 800; font-size: 3.4rem; line-height: .9; color: var(--blue); }
+.pick .big small { margin-left: 8px; font-size: 1.15rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.pick p { margin: 0; color: var(--muted); }
+.pick .go { font-weight: 600; color: var(--blue); }
+.about { margin-top: 18px; padding: 14px 16px; background: var(--surface-2); border-left: 4px solid var(--gold); border-radius: 0 8px 8px 0; }
+.about p { margin: 0; max-width: 60ch; }
+
+.panel { margin-top: 18px; }
+
+/* Wspólne */
+.card-box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.mono { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.btn {
+  min-height: 44px; padding: 8px 20px; border: 0; border-radius: 8px;
+  background: var(--blue); color: var(--on-blue); font-weight: 600;
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+
+
+/* Konto */
+.account-bar { margin-top: 12px; display:flex; align-items:center; justify-content:flex-end; gap:8px; min-height:40px; }
+.account-bar .account-copy { display:none; }
+.account-bar::before { content: 'Polskify'; margin-right:auto; font-family:var(--font-display); font-weight:800; font-size:1rem; letter-spacing:.03em; color:var(--muted); }
+.account-actions { display:flex; gap:8px; flex:none; flex-wrap:wrap; justify-content:flex-end; }
+.account-btn { min-height:38px; padding:7px 13px; border-radius:999px; border:1px solid #343434; background:#151515; color:#fff; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,.12); }
+.account-btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+.account-btn:hover { border-color:var(--gold); transform:translateY(-1px); }
+.account-panel { position:fixed; top:76px; right:18px; z-index:60; width:min(360px, calc(100vw - 36px)); padding:16px; background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:0 18px 50px rgba(0,0,0,.28); }
+.account-form { display:grid; gap:10px; }
+.account-form h3 { margin:0; font-family:var(--font-display); font-size:1.7rem; line-height:1; text-transform:uppercase; }
+.account-fields { display:grid; grid-template-columns:1fr; gap:10px; }
+.account-field { display:grid; gap:5px; }
+.account-field label { font-size:.82rem; font-weight:700; color:var(--muted); }
+.account-field input { width:100%; min-height:42px; padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink); }
+.account-msg { margin:0; color:var(--muted); font-size:.9rem; }
+.account-msg.error { color:var(--bad); }
+.account-msg.ok { color:var(--good); }
+.account-form-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.admin-panel { margin-top:12px; padding:14px; background:#111; color:#fff; border:1px solid #2e2e2e; border-radius:10px; }
+.admin-panel h3 { margin:0; font-family:var(--font-display); font-size:1.7rem; line-height:1; text-transform:uppercase; }
+.admin-note { margin:7px 0 12px; color:#aaa; font-size:.9rem; }
+.admin-actions { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.admin-regions { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.admin-region { min-height:42px; padding:8px 10px; border-radius:8px; border:1px solid #3a3a3a; background:#191919; color:#fff; text-align:left; font-weight:700; }
+.admin-region.passed { background:var(--good); border-color:#69e09f; }
+.admin-region:hover { border-color:var(--gold); }
+@media (max-width:620px) { .account-bar { min-height:38px; } .admin-regions { grid-template-columns:1fr; } }
+@media (min-width:621px) { .account-fields { grid-template-columns:1fr 1fr; } }
+/* Wyzwanie rysowania granicy */
+.draw-locked, .draw-unlocked { margin-top: 18px; }
+.draw-lock-box { display:grid; gap:8px; padding:22px; background:#111; color:#fff; border:1px solid #2e2e2e; border-radius:14px; text-align:center; justify-items:center; }
+.draw-lock-icon { font-size:2.8rem; line-height:1; }
+.draw-lock-title { margin:0; font-family:var(--font-display); font-size:clamp(1.9rem,7vw,2.8rem); line-height:1; text-transform:uppercase; }
+.draw-progress { font-family:var(--font-display); font-weight:800; font-size:clamp(2rem,8vw,3rem); line-height:1; color:var(--gold); }
+.draw-lock-copy { margin:0; max-width:48ch; color:#aaa; }
+.draw-card { margin-top:18px; padding:20px; background:#111; color:#fff; border:1px solid #2e2e2e; border-radius:14px; box-shadow:0 12px 34px rgba(0,0,0,.18); }
+.draw-card h2 { margin:0; font-family:var(--font-display); font-size:clamp(2rem,8vw,3rem); line-height:1; text-transform:uppercase; }
+.draw-card .draw-lead { margin:7px 0 0; color:#aaa; max-width:62ch; }
+.draw-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; flex-wrap:wrap; }
+.draw-meta .mono { color:#888; }
+.draw-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.draw-board { position:relative; margin-top:14px; border:1px solid #333; border-radius:14px; overflow:hidden; background:#0a0a0a; box-shadow:inset 0 0 0 1px rgba(255,255,255,.03); }
+.draw-canvas { display:block; width:100%; height:auto; aspect-ratio:3/2; touch-action:none; cursor:crosshair; background:radial-gradient(circle at 50% 48%, #161b20 0, #0a0c0f 70%); }
+.draw-instructions { margin:10px 0 0; color:#8d969f; font-size:.86rem; }
+.draw-result { margin-top:14px; padding:14px 16px; border-radius:10px; background:#171717; border:1px solid #333; display:grid; gap:5px; }
+.draw-result strong { font-size:1.1rem; }
+.draw-result .draw-score { font-family:var(--font-display); font-size:clamp(3.2rem,14vw,5rem); line-height:.88; font-weight:800; color:var(--gold); }
+.draw-result small { color:#aaa; }
+.draw-result.passed { border-color:var(--good); background:rgba(23,121,74,.12); }
+.draw-result.passed .draw-score { color:var(--good); }
+.draw-result.failed { border-color:#6d3a35; }
+.draw-legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; color:#8d969f; font-size:.78rem; }
+.draw-neighbor { display:inline-flex; align-items:center; gap:6px; }
+.draw-dot { width:8px; height:8px; border-radius:50%; display:inline-block; background:#5b646d; }
+@media (max-width:620px) { .draw-card { padding:15px; } .draw-actions .btn { flex:1; } }
+
+/* Quiz */
+.segs { display: flex; gap: 4px; margin-block: 10px 18px; }
+.seg { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); }
+.seg.now { background: var(--gold); }
+.seg.ok { background: var(--blue); }
+.seg.no { background: var(--bad); }
+.qhead { display: flex; justify-content: space-between; gap: 12px; }
+.question { margin: 0; font-size: clamp(1.2rem, 4.4vw, 1.5rem); line-height: 1.3; font-weight: 600; text-wrap: balance; }
+.question:focus { outline: none; }
+.opts { display: grid; gap: 10px; margin-top: 18px; }
+.opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px;
+  padding: 10px 14px; text-align: left;
+  background: var(--surface); color: var(--ink);
+  border: 1.5px solid var(--line); border-radius: 8px;
+}
+.opt:not(:disabled):hover { border-color: var(--blue); background: var(--blue-soft); }
+.opt:disabled { cursor: default; color: var(--ink); }
+.opt .key {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px;
+  background: var(--surface-2); font-family: var(--font-mono); font-size: .82rem; font-weight: 500;
+}
+.opt span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.opt.correct { border-color: var(--good); background: var(--good-soft); }
+.opt.correct .key { background: var(--good); color: var(--surface); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.wrong .key { background: var(--bad); color: var(--surface); }
+.fb { margin-top: 16px; }
+.fb-in { display: grid; gap: 10px; padding: 14px 16px; border-radius: 8px; background: var(--surface-2); border-left: 4px solid var(--gold); }
+.fb-in p { margin: 0; }
+.fb-title { font-weight: 700; font-size: 1.05rem; }
+.fb-answer { font-weight: 600; }
+.fb-explain { color: var(--muted); }
+.fb-explain b { color: var(--ink); }
+.fb-in .btn { justify-self: start; margin-top: 2px; }
+
+.score { font-family: var(--font-display); font-weight: 800; font-size: clamp(4rem, 20vw, 6.5rem); line-height: .9; margin: 6px 0 0; }
+.score span { color: var(--muted); font-size: .5em; }
+.result-points { margin: 8px 0 0; color: var(--muted); font-size: 1rem; }
+.result-status { display: grid; gap: 4px; margin-top: 16px; padding: 14px 16px; border-radius: 8px; border: 1.5px solid var(--line); }
+.result-status strong { font-size: 1rem; }
+.result-status span { color: var(--muted); }
+.result-status.passed { background: var(--good-soft); border-color: var(--good); }
+.result-status.passed strong { color: var(--good); }
+.result-status.failed { background: var(--bad-soft); border-color: var(--bad); }
+.result-status.failed strong { color: var(--bad); }
+.verdict { margin: 8px 0 0; font-size: 1.15rem; font-weight: 600; text-wrap: balance; }
+.missed { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.missed li { padding: 10px 12px; border-left: 3px solid var(--bad); background: var(--surface-2); border-radius: 0 6px 6px 0; font-size: .95rem; }
+.missed b { display: block; font-weight: 600; }
+.actions { margin-top: 20px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .inner { transition: none; }
+}
+@media (min-width: 560px) {
+}
+
+/* Profesjonalna mapa Polski i jej sąsiadów */
+.pro-map-stage{
+  position:relative;
+  aspect-ratio:1357 / 1106;
+  min-height:0;
+  padding:0;
+  background:#e8edf2;
+  border:1px solid #c7d1da;
+  border-radius:14px;
+  box-shadow:0 18px 44px rgba(18,28,43,.10), inset 0 1px 0 rgba(255,255,255,.92);
+  overflow:hidden;
+}
+.neighbor-map-bg{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:fill; z-index:1; user-select:none; pointer-events:none;
+}
+.pro-map-stage::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:8;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 25%,rgba(20,38,54,.04));
+}
+.poland-overlay{
+  position:absolute; z-index:3;
+  left:22.5%; top:17%; width:55%; height:66%;
+  pointer-events:none;
+  filter:drop-shadow(0 12px 18px rgba(18,28,43,.15));
+}
+.pro-poland-map{
+  display:block; width:100%; height:100%;
+  object-fit:contain;
+  filter:grayscale(1) brightness(.88) contrast(1.16);
+  opacity:.94;
+}
+.poland-overlay::after{
+  content:''; position:absolute; inset:1%; pointer-events:none;
+  border:2px solid rgba(68,82,95,.22); border-radius:12px;
+}
+.province-hotspot{
+  position:absolute; z-index:6;
+  transform:translate(-50%,-50%);
+  width:11%; height:10%; min-width:64px;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:14px;
+  background:transparent;
+  color:transparent;
+  cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+.province-hotspot::after{
+  content:attr(data-name) '  →';
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  opacity:0;
+  min-width:max-content; max-width:150px;
+  padding:7px 10px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:8px;
+  background:rgba(14,20,27,.94);
+  color:#fff;
+  font-size:.72rem; line-height:1.05; font-weight:800;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+  pointer-events:none;
+  transition:opacity .14s ease,transform .14s ease;
+}
+.province-hotspot:hover,.province-hotspot:focus-visible{
+  background:rgba(35,132,90,.28);
+  border-color:#23845a;
+  box-shadow:0 0 0 3px rgba(35,132,90,.10),0 8px 24px rgba(35,132,90,.18);
+  transform:translate(-50%,-50%) scale(1.035);
+}
+.province-hotspot:hover::after,.province-hotspot:focus-visible::after{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.province-hotspot.passed{
+  background:rgba(35,132,90,.28);
+  border-color:#23845a;
+  box-shadow:0 0 0 2px rgba(35,132,90,.13);
+}
+.province-hotspot.passed::before{
+  content:'✓';
+  position:absolute; right:5px; top:4px;
+  display:grid; place-items:center; width:20px; height:20px;
+  border-radius:50%; background:#23845a; color:#fff; font-size:.75rem; font-weight:900;
+}
+.region-grid{display:none}
+.map-caption-row{
+  display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:11px;
+}
+.map-caption-row .map-credit{margin:0}
+.map-legend{display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:.75rem;}
+.legend-swatch{display:inline-block;width:10px;height:10px;border-radius:3px;background:#d4dbe2;border:1px solid #aeb9c4;margin-right:5px;vertical-align:-1px}
+.legend-swatch.done{background:#23845a;border-color:#4da879}
+.neighbor-help{margin:0; color:var(--muted); font-size:.82rem;}
+@media (max-width:620px){
+  .pro-map-stage{aspect-ratio:1.18 / 1}
+  .poland-overlay{left:18%;top:19%;width:64%;height:62%}
+  .province-hotspot{width:15%;height:11%;min-width:46px}
+  .province-hotspot::after{font-size:.62rem;padding:6px 8px}
+  .map-caption-row{align-items:flex-start;flex-direction:column;}
+}
+
+/* === Mapa administracyjna Polski — styl interaktywny === */
+.pro-map-stage{
+  position:relative;
+  width:100%;
+  aspect-ratio:13 / 10;
+  padding:10px;
+  background:#0b1016;
+  border:1px solid #27313b;
+  border-radius:14px;
+  box-shadow:0 18px 44px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
+  overflow:hidden;
+}
+.pro-map-image{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:9px;
+  user-select:none;
+  pointer-events:none;
+}
+.province-hotspot{
+  position:absolute;
+  z-index:3;
+  transform:translate(-50%,-50%);
+  width:100px;
+  max-width:100px;
+  min-width:0;
+  min-height:30px;
+  padding:4px 6px;
+  border:1px solid rgba(47,58,68,.38);
+  border-radius:8px;
+  background:rgba(235,239,243,.94);
+  color:#293846;
+  box-shadow:0 3px 10px rgba(13,20,28,.16);
+  backdrop-filter:blur(4px);
+  font-size:.57rem;
+  line-height:1.08;
+  font-weight:800;
+  text-align:center;
+  cursor:pointer;
+  white-space:normal;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  hyphens:auto;
+  transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+.province-hotspot:hover,
+.province-hotspot:focus-visible{
+  z-index:6;
+  background:#23845a;
+  color:#fff;
+  border-color:#23845a;
+  box-shadow:0 7px 18px rgba(35,132,90,.28);
+  transform:translate(-50%,-50%) scale(1.05);
+}
+.province-hotspot.passed{
+  background:#23845a;
+  color:#fff;
+  border-color:#23845a;
+  box-shadow:0 0 0 2px rgba(35,132,90,.15),0 6px 16px rgba(35,132,90,.20);
+}
+.province-hotspot.passed::after{
+  content:' ✓';
+  opacity:.95;
+}
+.province-hotspot::after{ content:''; }
+@media (max-width:620px){
+  .pro-map-stage{aspect-ratio:1.15 / 1;padding:8px}
+  .province-hotspot{width:82px;max-width:82px;min-height:27px;padding:3px 4px;font-size:.49rem;border-radius:6px}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Tekst bez kwadratów — nazwa bezpośrednio na województwie */
+#poland-map .province-hotspot{
+  width:auto !important;
+  max-width:none !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  height:auto !important;
+  padding:2px 4px !important;
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#3a4650 !important;
+  font-size:.56rem !important;
+  font-weight:900 !important;
+  line-height:1.03 !important;
+  text-align:center !important;
+  letter-spacing:.01em !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-shadow:
+    -1px -1px 0 rgba(255,255,255,.98),
+     1px -1px 0 rgba(255,255,255,.98),
+    -1px  1px 0 rgba(255,255,255,.98),
+     1px  1px 0 rgba(255,255,255,.98),
+     0 2px 6px rgba(255,255,255,.92);
+  transform:translate(-50%,-50%) !important;
+}
+#poland-map .province-hotspot::after{
+  display:none !important;
+}
+#poland-map .province-hotspot::before{
+  display:none !important;
+}
+#poland-map .province-hotspot:hover,
+#poland-map .province-hotspot:focus-visible{
+  color:#1d8d59 !important;
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  transform:translate(-50%,-50%) scale(1.05) !important;
+  text-shadow:
+    -1px -1px 0 rgba(255,255,255,.98),
+     1px -1px 0 rgba(255,255,255,.98),
+    -1px  1px 0 rgba(255,255,255,.98),
+     1px  1px 0 rgba(255,255,255,.98),
+     0 0 12px rgba(29,141,89,.25);
+}
+#poland-map .province-hotspot.passed{
+  color:#1d8d59 !important;
+}
+
+/* Dokładniejsze ustawienie podpisów */
+#poland-map .province-hotspot[data-region="ZP"]{left:18.0% !important; top:26.5% !important; width:66px !important;}
+#poland-map .province-hotspot[data-region="PM"]{left:47.8% !important; top:17.0% !important; width:54px !important;}
+#poland-map .province-hotspot[data-region="WN"]{left:72.8% !important; top:23.0% !important; width:76px !important;}
+#poland-map .province-hotspot[data-region="PD"]{left:87.2% !important; top:38.5% !important; width:52px !important;}
+#poland-map .province-hotspot[data-region="LB"]{left:12.6% !important; top:52.3% !important; width:48px !important;}
+#poland-map .province-hotspot[data-region="KP"]{left:49.5% !important; top:35.0% !important; width:72px !important;}
+#poland-map .province-hotspot[data-region="WP"]{left:35.5% !important; top:45.2% !important; width:62px !important;}
+#poland-map .province-hotspot[data-region="MZ"]{left:69.2% !important; top:45.6% !important; width:56px !important;}
+#poland-map .province-hotspot[data-region="LD"]{left:50.5% !important; top:56.4% !important; width:46px !important;}
+#poland-map .province-hotspot[data-region="LU"]{left:82.0% !important; top:60.8% !important; width:48px !important;}
+#poland-map .province-hotspot[data-region="DS"]{left:27.2% !important; top:68.2% !important; width:58px !important;}
+#poland-map .province-hotspot[data-region="OP"]{left:39.0% !important; top:74.8% !important; width:42px !important;}
+#poland-map .province-hotspot[data-region="SK"]{left:61.7% !important; top:68.4% !important; width:68px !important;}
+#poland-map .province-hotspot[data-region="SL"]{left:46.5% !important; top:81.2% !important; width:42px !important;}
+#poland-map .province-hotspot[data-region="MA"]{left:60.7% !important; top:82.7% !important; width:58px !important;}
+#poland-map .province-hotspot[data-region="PK"]{left:76.8% !important; top:81.2% !important; width:56px !important;}
+
+@media (max-width:620px){
+  #poland-map .province-hotspot{font-size:.45rem !important;}
+  #poland-map .province-hotspot[data-region="WN"]{width:64px !important;}
+  #poland-map .province-hotspot[data-region="KP"]{width:60px !important;}
+  #poland-map .province-hotspot[data-region="SK"]{width:58px !important;}
+  #poland-map .province-hotspot[data-region="ZP"]{width:56px !important;}
+  #poland-map .province-hotspot[data-region="WP"]{width:54px !important;}
+  #poland-map .province-hotspot[data-region="MA"]{width:50px !important;}
+  #poland-map .province-hotspot[data-region="PK"]{width:48px !important;}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Lepsze napisy na województwach: bez losowego łamania, tylko ręczne podziały */
+#poland-map .province-hotspot{
+  white-space:normal !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+  hyphens:none !important;
+  font-size:.54rem !important;
+  font-weight:900 !important;
+  line-height:1.02 !important;
+  color:#42505c !important;
+  text-shadow:
+    -1px -1px 0 rgba(255,255,255,.99),
+     1px -1px 0 rgba(255,255,255,.99),
+    -1px  1px 0 rgba(255,255,255,.99),
+     1px  1px 0 rgba(255,255,255,.99),
+     0 2px 6px rgba(255,255,255,.95) !important;
+}
+#poland-map .province-hotspot:hover,
+#poland-map .province-hotspot:focus-visible,
+#poland-map .province-hotspot.passed{
+  color:#1e8d5a !important;
+}
+#poland-map .province-hotspot br{content:'';}
+
+/* Szersze lub węższe pola dokładnie pod dany napis */
+#poland-map .province-hotspot[data-region="ZP"]{left:18.3% !important; top:26.5% !important; width:72px !important;}
+#poland-map .province-hotspot[data-region="PM"]{left:48.0% !important; top:17.2% !important; width:52px !important;}
+#poland-map .province-hotspot[data-region="WN"]{left:73.0% !important; top:23.0% !important; width:78px !important;}
+#poland-map .province-hotspot[data-region="PD"]{left:87.2% !important; top:38.6% !important; width:50px !important;}
+#poland-map .province-hotspot[data-region="LB"]{left:12.7% !important; top:52.4% !important; width:46px !important;}
+#poland-map .province-hotspot[data-region="KP"]{left:49.3% !important; top:34.7% !important; width:74px !important;}
+#poland-map .province-hotspot[data-region="WP"]{left:35.6% !important; top:45.2% !important; width:56px !important;}
+#poland-map .province-hotspot[data-region="MZ"]{left:69.2% !important; top:45.6% !important; width:64px !important;}
+#poland-map .province-hotspot[data-region="LD"]{left:50.5% !important; top:56.3% !important; width:44px !important;}
+#poland-map .province-hotspot[data-region="LU"]{left:82.0% !important; top:60.9% !important; width:48px !important;}
+#poland-map .province-hotspot[data-region="DS"]{left:27.3% !important; top:68.1% !important; width:54px !important;}
+#poland-map .province-hotspot[data-region="OP"]{left:39.1% !important; top:74.9% !important; width:42px !important;}
+#poland-map .province-hotspot[data-region="SK"]{left:61.9% !important; top:68.3% !important; width:62px !important;}
+#poland-map .province-hotspot[data-region="SL"]{left:46.5% !important; top:81.0% !important; width:40px !important;}
+#poland-map .province-hotspot[data-region="MA"]{left:60.8% !important; top:82.6% !important; width:50px !important;}
+#poland-map .province-hotspot[data-region="PK"]{left:76.9% !important; top:81.2% !important; width:50px !important;}
+
+@media (max-width:620px){
+  #poland-map .province-hotspot{font-size:.46rem !important;}
+  #poland-map .province-hotspot[data-region="ZP"]{width:62px !important;}
+  #poland-map .province-hotspot[data-region="WN"]{width:68px !important;}
+  #poland-map .province-hotspot[data-region="KP"]{width:64px !important;}
+  #poland-map .province-hotspot[data-region="MZ"]{width:56px !important;}
+  #poland-map .province-hotspot[data-region="SK"]{width:54px !important;}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Dodatkowe dosunięcie podpisów do środka obwodu województw */
+#poland-map .province-hotspot[data-region="PM"]{left:49.4% !important; top:20.0% !important; width:54px !important;}
+#poland-map .province-hotspot[data-region="PD"]{left:84.6% !important; top:38.1% !important; width:52px !important;}
+#poland-map .province-hotspot[data-region="LB"]{left:16.0% !important; top:54.1% !important; width:48px !important;}
+#poland-map .province-hotspot[data-region="LD"]{left:49.4% !important; top:59.1% !important; width:44px !important;}
+#poland-map .province-hotspot[data-region="DS"]{left:25.6% !important; top:73.0% !important; width:54px !important;}
+#poland-map .province-hotspot[data-region="OP"]{left:37.7% !important; top:73.0% !important; width:42px !important;}
+#poland-map .province-hotspot[data-region="SK"]{left:63.0% !important; top:69.8% !important; width:62px !important;}
+#poland-map .province-hotspot[data-region="SL"]{left:43.5% !important; top:79.7% !important; width:40px !important;}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Pozycje podpisów wyliczone z rzeczywistych środków obwodów województw na tej mapie */
+#poland-map .province-hotspot[data-region="ZP"]{left:22.2% !important;top:23.49% !important;}
+#poland-map .province-hotspot[data-region="PM"]{left:42.25% !important;top:14.13% !important;}
+#poland-map .province-hotspot[data-region="WN"]{left:65.66% !important;top:19.11% !important;}
+#poland-map .province-hotspot[data-region="PD"]{left:83.61% !important;top:28.76% !important;}
+#poland-map .province-hotspot[data-region="LB"]{left:19.6% !important;top:46.6% !important;}
+#poland-map .province-hotspot[data-region="KP"]{left:46.47% !important;top:33.02% !important;}
+#poland-map .province-hotspot[data-region="WP"]{left:35.74% !important;top:45.3% !important;}
+#poland-map .province-hotspot[data-region="MZ"]{left:68.26% !important;top:44.66% !important;}
+#poland-map .province-hotspot[data-region="LD"]{left:54.13% !important;top:57.2% !important;}
+#poland-map .province-hotspot[data-region="LU"]{left:83.66% !important;top:62.28% !important;}
+#poland-map .province-hotspot[data-region="DS"]{left:28.61% !important;top:64.84% !important;}
+#poland-map .province-hotspot[data-region="OP"]{left:41.19% !important;top:72.25% !important;}
+#poland-map .province-hotspot[data-region="SK"]{left:65.77% !important;top:70.49% !important;}
+#poland-map .province-hotspot[data-region="SL"]{left:50.62% !important;top:77.02% !important;}
+#poland-map .province-hotspot[data-region="MA"]{left:61.71% !important;top:84.64% !important;}
+#poland-map .province-hotspot[data-region="PK"]{left:77.73% !important;top:82.57% !important;}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Pełne podświetlanie województw */
+#poland-map .province-overlay{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:2;
+  pointer-events:none;
+}
+#poland-map .province-shape{
+  pointer-events:auto;
+  cursor:pointer;
+  fill:rgba(108, 137, 122, 0.06);
+  stroke:rgba(74, 92, 83, 0.10);
+  stroke-width:0.7;
+  transition:fill .18s ease, stroke .18s ease, filter .18s ease;
+}
+#poland-map .province-shape:hover,
+#poland-map .province-shape:focus-visible{
+  fill:rgba(116, 168, 140, 0.30);
+  stroke:rgba(80, 133, 108, 0.75);
+  filter:drop-shadow(0 2px 5px rgba(72,122,99,.15));
+  outline:none;
+}
+#poland-map .province-shape.passed{
+  fill:rgba(116, 168, 140, 0.72);
+  stroke:rgba(69, 120, 96, 0.88);
+  stroke-width:1.05;
+}
+#poland-map .province-shape.passed:hover,
+#poland-map .province-shape.passed:focus-visible{
+  fill:rgba(105, 158, 130, 0.82);
+}
+#poland-map .province-hotspot{
+  z-index:4 !important;
+  pointer-events:auto;
+}
+#poland-map .province-hotspot.passed{
+  color:#2f6f54 !important;
+  text-shadow:
+    -1px -1px 0 rgba(255,255,255,.95),
+     1px -1px 0 rgba(255,255,255,.95),
+    -1px  1px 0 rgba(255,255,255,.95),
+     1px  1px 0 rgba(255,255,255,.95) !important;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Poziom 2 — dokładny obrys wektorowy Polski */
+.draw-board{
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 48%, #182027 0%, #0c1116 72%);
+  min-height:420px;
+}
+.draw-canvas{
+  position:relative;
+  z-index:2;
+}
+.draw-reference-image{
+  position:absolute;
+  z-index:3;
+  left:50%;
+  top:50%;
+  width:63%;
+  height:76%;
+  transform:translate(-50%,-50%);
+  object-fit:contain;
+  opacity:0;
+  pointer-events:none;
+  filter:
+    invert(55%) sepia(17%) saturate(839%) hue-rotate(93deg)
+    brightness(91%) contrast(87%)
+    drop-shadow(0 0 7px rgba(111,164,137,.22));
+  transition:opacity .22s ease;
+}
+.draw-reference-image.show{ opacity:.95; }
+.draw-neighbor-label{
+  position:absolute;
+  z-index:1;
+  color:#687580;
+  font-size:.76rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  user-select:none;
+  pointer-events:none;
+}
+.n-germany{left:7%;top:43%}
+.n-czechia{left:24%;bottom:8%}
+.n-slovakia{left:49%;bottom:5%}
+.n-ukraine{right:5%;bottom:25%}
+.n-belarus{right:5%;top:26%}
+.n-lithuania{right:20%;top:5%}
+.n-russia{right:5%;top:8%}
+@media(max-width:620px){
+  .draw-board{min-height:320px}
+  .draw-reference-image{width:68%;height:76%}
+  .draw-neighbor-label{font-size:.62rem}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Poziom 2 — większa, czytelniejsza plansza */
+#draw .draw-card{
+  width:min(58rem, calc(100vw - 28px));
+  margin-left:50%;
+  transform:translateX(-50%);
+  padding:24px;
+}
+#draw .draw-board{
+  min-height:560px;
+  aspect-ratio:16 / 10;
+  border-radius:18px;
+  border-color:#35414c;
+  background:
+    radial-gradient(circle at 50% 48%, #1b242c 0%, #10161c 58%, #0a0f14 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.035),
+    0 16px 42px rgba(0,0,0,.24);
+}
+#draw .draw-canvas{
+  width:100%;
+  height:100%;
+  aspect-ratio:auto;
+}
+#draw .draw-reference-image{
+  width:72%;
+  height:82%;
+}
+#draw .draw-neighbor-label{
+  color:#8b98a4;
+  font-size:.88rem;
+  letter-spacing:.09em;
+  text-shadow:0 1px 8px rgba(0,0,0,.75);
+}
+#draw .n-germany{left:5%;top:44%}
+#draw .n-czechia{left:22%;bottom:7%}
+#draw .n-slovakia{left:47%;bottom:4%}
+#draw .n-ukraine{right:4%;bottom:24%}
+#draw .n-belarus{right:4%;top:27%}
+#draw .n-lithuania{right:19%;top:4%}
+#draw .n-russia{right:4%;top:8%}
+
+#draw .draw-hints{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:15px;
+  color:#8f9aa5;
+  font-size:.78rem;
+}
+#draw .draw-hints span{
+  font-family:var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+#draw .draw-hints b{
+  padding:4px 8px;
+  border:1px solid #303943;
+  border-radius:999px;
+  background:#171d23;
+  color:#c1c9d0;
+  font-size:.74rem;
+}
+#draw .draw-legend{
+  display:none;
+}
+@media(max-width:760px){
+  #draw .draw-card{
+    width:calc(100vw - 24px);
+    padding:16px;
+  }
+  #draw .draw-board{
+    min-height:430px;
+    aspect-ratio:4 / 3;
+  }
+  #draw .draw-reference-image{
+    width:76%;
+    height:80%;
+  }
+  #draw .draw-neighbor-label{
+    font-size:.68rem;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+#draw .draw-country-hint{
+  padding:4px 8px;
+  border:1px solid #303943;
+  border-radius:999px;
+  background:#171d23;
+  color:#c1c9d0;
+  font-size:.74rem;
+  font-weight:700;
+  cursor:pointer;
+}
+#draw .draw-country-hint:hover,
+#draw .draw-country-hint:focus-visible{
+  border-color:#6fa589;
+  color:#dcebe3;
+  background:#1b2922;
+}
+#draw .draw-neighbor-label{
+  border:0;
+  background:transparent;
+  padding:3px 5px;
+  cursor:pointer;
+}
+#draw .draw-neighbor-label:hover,
+#draw .draw-neighbor-label:focus-visible{
+  color:#b7c6bd;
+  text-decoration:underline;
+  outline:none;
+}
+#draw .draw-board.preview-active .draw-canvas{
+  cursor:not-allowed;
+  filter:brightness(.92);
+}
+#draw .draw-board.preview-active::after{
+  content:'Podgląd granicy — rysowanie zablokowane';
+  position:absolute;
+  left:50%;
+  bottom:14px;
+  z-index:5;
+  transform:translateX(-50%);
+  padding:7px 11px;
+  border:1px solid rgba(111,165,137,.35);
+  border-radius:999px;
+  background:rgba(11,18,15,.88);
+  color:#b9d3c4;
+  font-size:.76rem;
+  font-weight:700;
+  pointer-events:none;
+}
+#draw .draw-preview-status{
+  color:#86b39b;
+  font-family:var(--font-mono);
+  font-size:.74rem;
+  letter-spacing:.03em;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* === POZIOM 2: poprawka układu === */
+#draw{
+  overflow:visible;
+}
+#draw .draw-unlocked,
+#draw .draw-card{
+  min-width:0;
+  max-width:100%;
+}
+#draw .draw-card{
+  width:100% !important;
+  max-width:58rem !important;
+  margin:18px auto 0 !important;
+  transform:none !important;
+  overflow:hidden;
+}
+#draw .draw-card h2,
+#draw .draw-lead{
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+#draw .draw-hints{
+  max-width:100%;
+}
+#draw .draw-board{
+  position:relative;
+  width:100%;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:3 / 2 !important;
+  margin-top:16px;
+  overflow:hidden !important;
+  border:1px solid #35414c;
+  border-radius:16px;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    radial-gradient(circle at 50% 48%, #182129 0%, #0b1015 72%);
+  background-size:44px 44px,44px 44px,auto;
+}
+#draw .draw-canvas{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:2;
+  display:block;
+  width:100% !important;
+  height:100% !important;
+  aspect-ratio:auto !important;
+  background:transparent !important;
+}
+#draw .draw-reference-image{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:63% !important;
+  height:78% !important;
+  transform:translate(-50%,-50%) !important;
+  object-fit:contain;
+  z-index:3;
+  pointer-events:none;
+}
+#draw .draw-neighbor-label{
+  position:absolute !important;
+  z-index:4 !important;
+  width:auto !important;
+  height:auto !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:4px 6px !important;
+  border:0 !important;
+  background:rgba(10,15,20,.62) !important;
+  border-radius:6px !important;
+  color:#8e9ba7 !important;
+  font-size:.72rem !important;
+  font-weight:800;
+  letter-spacing:.08em;
+  line-height:1;
+  box-shadow:none !important;
+}
+#draw .draw-neighbor-label:hover,
+#draw .draw-neighbor-label:focus-visible{
+  color:#b9d4c5 !important;
+  background:rgba(27,45,36,.82) !important;
+}
+#draw .n-germany{left:5% !important;top:44% !important;right:auto !important;bottom:auto !important}
+#draw .n-czechia{left:23% !important;bottom:5% !important;top:auto !important;right:auto !important}
+#draw .n-slovakia{left:48% !important;bottom:3% !important;top:auto !important;right:auto !important}
+#draw .n-ukraine{right:3% !important;bottom:24% !important;left:auto !important;top:auto !important}
+#draw .n-belarus{right:3% !important;top:27% !important;left:auto !important;bottom:auto !important}
+#draw .n-lithuania{right:18% !important;top:4% !important;left:auto !important;bottom:auto !important}
+#draw .n-russia{right:3% !important;top:7% !important;left:auto !important;bottom:auto !important}
+
+#draw .draw-legend{display:none !important;}
+#draw .draw-instructions{
+  margin:10px 0 0;
+  max-width:100%;
+}
+#draw .draw-meta{
+  align-items:center;
+}
+#draw .draw-actions{
+  margin-left:auto;
+}
+#draw .draw-board.preview-active::after{
+  white-space:nowrap;
+  max-width:calc(100% - 24px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+@media(max-width:760px){
+  #draw .draw-card{
+    width:100% !important;
+    padding:15px !important;
+  }
+  #draw .draw-board{
+    aspect-ratio:4 / 3 !important;
+  }
+  #draw .draw-reference-image{
+    width:70% !important;
+    height:78% !important;
+  }
+  #draw .draw-neighbor-label{
+    font-size:.58rem !important;
+    padding:3px 4px !important;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+#draw .neighbor-preview-map{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  pointer-events:none;
+}
+#draw .neighbor-country{
+  fill:rgba(111,157,133,.12);
+  stroke:rgba(126,176,150,.96);
+  stroke-width:2.1;
+  vector-effect:non-scaling-stroke;
+  opacity:0;
+  transition:opacity .18s ease;
+  filter:drop-shadow(0 0 7px rgba(86,137,112,.18));
+}
+#draw .neighbor-country.show{opacity:1}
+#draw .draw-reference-image{z-index:4 !important}
+#draw .draw-neighbor-label{z-index:5 !important}
+#draw .draw-board.preview-active .draw-canvas{
+  pointer-events:none;
+  cursor:not-allowed;
+}
+#draw .neighbor-load-note{
+  color:#82909b;
+  font-size:.72rem;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+#draw .neighbor-country{
+  fill:rgba(111,157,133,.075) !important;
+  stroke:rgba(126,176,150,.98) !important;
+  stroke-width:2.35 !important;
+}
+#draw .neighbor-country.show{
+  opacity:1 !important;
+}
+#draw .draw-board.preview-active{
+  box-shadow:
+    inset 0 0 0 1px rgba(126,176,150,.10),
+    0 0 0 1px rgba(126,176,150,.06);
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Poziom 2 — statyczne, poprawnie przycięte granice sąsiadów */
+#draw .neighbor-preview-map{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  pointer-events:none;
+  overflow:hidden;
+}
+#draw .neighbor-country{
+  fill:rgba(109,153,131,.08);
+  stroke:rgba(123,176,148,.98);
+  stroke-width:2.1;
+  vector-effect:non-scaling-stroke;
+  opacity:0;
+  transition:opacity .16s ease;
+  filter:drop-shadow(0 0 7px rgba(85,139,112,.16));
+}
+#draw .neighbor-country.show{opacity:1}
+#draw .draw-reference-image{z-index:4 !important}
+#draw .draw-neighbor-label{z-index:5 !important}
+#draw .draw-board.preview-active .draw-canvas{
+  pointer-events:none;
+  cursor:not-allowed;
+}
+#draw .n-germany{left:10.0% !important;top:52.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-czechia{left:27.0% !important;top:89.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-slovakia{left:49.5% !important;top:92.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-ukraine{left:91.0% !important;top:72.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-belarus{left:91.0% !important;top:33.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-lithuania{left:78.0% !important;top:6.0% !important;right:auto !important;bottom:auto !important;}
+#draw .n-russia{left:92.0% !important;top:10.0% !important;right:auto !important;bottom:auto !important;}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Poprawiona WYŁĄCZNIE Polska — sąsiednie państwa pozostają bez zmian */
+#draw .draw-reference-image{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+  object-fit:unset !important;
+  opacity:0;
+  pointer-events:none;
+  z-index:4 !important;
+  transition:opacity .18s ease;
+  filter:none !important;
+}
+#draw .draw-reference-image.show{
+  opacity:1;
+}
+#draw .poland-reference-path{
+  fill:rgba(108,157,132,.045);
+  stroke:rgba(116,173,143,.98);
+  stroke-width:2.4;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 6px rgba(90,145,117,.16));
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Dokładniejsze pozycje nazw sąsiadów */
+#draw .n-germany{
+  left:10.5% !important;
+  top:53% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-czechia{
+  left:29% !important;
+  top:90% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-slovakia{
+  left:51% !important;
+  top:91% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-ukraine{
+  left:91% !important;
+  top:72% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-belarus{
+  left:91% !important;
+  top:36% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-lithuania{
+  left:76% !important;
+  top:12% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+#draw .n-russia{
+  left:67% !important;
+  top:8% !important;
+  right:auto !important;
+  bottom:auto !important;
+}
+
+/* Nie pozwól nazwom wyjść poza planszę */
+#draw .draw-neighbor-label{
+  max-width:110px;
+  white-space:nowrap;
+  transform:translate(-50%,-50%);
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Dokładne pozycje nazw sąsiadów — na środku widocznego obszaru państwa */
+#draw .n-germany{left:23.8% !important;top:57.0% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-czechia{left:46.2% !important;top:73.2% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-slovakia{left:64.2% !important;top:83.4% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-ukraine{left:89.4% !important;top:71.9% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-belarus{left:90.6% !important;top:35.1% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-lithuania{left:83.9% !important;top:21.4% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+#draw .n-russia{left:71.3% !important;top:25.1% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;}
+
+#draw .draw-neighbor-label{
+  max-width:120px !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* System XP i poziomów */
+.xp-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface);
+  box-shadow:0 4px 14px rgba(18,28,43,.06);
+  font-size:.78rem;
+  font-weight:700;
+  white-space:nowrap;
+}
+#xp-level{
+  color:var(--blue);
+}
+#xp-value{
+  color:var(--muted);
+  font-family:var(--font-mono);
+  font-size:.72rem;
+}
+.xp-earned{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px solid rgba(240,178,10,.35);
+  border-radius:9px;
+  background:rgba(240,178,10,.08);
+}
+.xp-earned strong{
+  color:var(--gold);
+}
+@media(max-width:620px){
+  .account-bar{
+    flex-wrap:wrap;
+  }
+  .xp-chip{
+    order:2;
+    margin-left:auto;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.admin-xp-box{
+  display:grid;
+  gap:10px;
+  margin-bottom:14px;
+  padding:12px;
+  border:1px solid #2f3945;
+  border-radius:10px;
+  background:#151a20;
+}
+.admin-xp-box h4{
+  margin:0;
+  font-size:1rem;
+}
+.admin-xp-box p{
+  margin:3px 0 0;
+  color:#aeb8c3;
+  font-family:var(--font-mono);
+  font-size:.78rem;
+}
+.admin-xp-controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.admin-xp-controls input{
+  min-height:38px;
+  width:120px;
+  padding:7px 10px;
+  border-radius:8px;
+  border:1px solid #3a4652;
+  background:#0f141a;
+  color:#fff;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+#xp-level{
+  max-width:210px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Odznaki */
+.badges-card{
+  margin-top:16px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:0 8px 24px rgba(18,28,43,.06);
+}
+.badges-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+}
+.badges-head h2{
+  margin:4px 0 3px;
+  font-family:var(--font-display);
+}
+.badges-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:.9rem;
+}
+.badges-count{
+  min-width:64px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  text-align:center;
+  font-family:var(--font-mono);
+  font-size:.78rem;
+  font-weight:800;
+}
+.badges-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.badge-card{
+  position:relative;
+  min-height:126px;
+  padding:14px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,.45);
+  text-align:center;
+  overflow:hidden;
+}
+.badge-card.locked{
+  opacity:.48;
+  filter:saturate(.4);
+}
+.badge-card.earned{
+  border-color:rgba(110,162,135,.58);
+  background:linear-gradient(180deg,rgba(114,169,141,.11),rgba(255,255,255,.35));
+}
+.badge-icon{
+  display:flex;
+  width:42px;
+  height:42px;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 9px;
+  border-radius:50%;
+  background:#151a20;
+  color:#fff;
+  font-size:1.25rem;
+  box-shadow:0 5px 14px rgba(18,28,43,.12);
+}
+.badge-card.earned .badge-icon{
+  background:#547a65;
+}
+.badge-name{
+  display:block;
+  font-weight:850;
+  font-size:.88rem;
+  line-height:1.15;
+}
+.badge-desc{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:.72rem;
+  line-height:1.28;
+}
+.badge-state{
+  display:inline-block;
+  margin-top:8px;
+  padding:3px 6px;
+  border-radius:999px;
+  background:rgba(0,0,0,.055);
+  font-family:var(--font-mono);
+  font-size:.61rem;
+  font-weight:800;
+}
+.badge-card.earned .badge-state{
+  color:#456b56;
+  background:rgba(95,151,121,.12);
+}
+.badge-new{
+  animation:badgePop .55s ease both;
+}
+@keyframes badgePop{
+  0%{transform:scale(.88);box-shadow:0 0 0 rgba(95,151,121,0)}
+  60%{transform:scale(1.04);box-shadow:0 0 0 8px rgba(95,151,121,.10)}
+  100%{transform:scale(1)}
+}
+@media(max-width:760px){
+  .badges-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.admin-login-hint{
+  margin:10px 0 0;
+  color:var(--muted);
+  font-size:.72rem;
+  line-height:1.35;
+}
+.admin-login-hint b{color:var(--text)}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Dopasowanie mapy poziomu 1 do nowego podkładu administracyjnego */
+#p-map .pro-map-stage, #map-panel .pro-map-stage, .pro-map-stage {
+  aspect-ratio: 324 / 281;
+  padding: 0;
+}
+.pro-map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.province-hotspot[data-region="ZP"]{left:18.5%!important;top:27.0%!important;}
+.province-hotspot[data-region="PM"]{left:48.5%!important;top:17.5%!important;}
+.province-hotspot[data-region="WM"]{left:73.0%!important;top:23.5%!important;}
+.province-hotspot[data-region="PD"]{left:87.0%!important;top:38.5%!important;}
+.province-hotspot[data-region="LB"]{left:12.5%!important;top:52.0%!important;}
+.province-hotspot[data-region="WP"]{left:36.0%!important;top:43.0%!important;}
+.province-hotspot[data-region="KP"]{left:50.0%!important;top:34.5%!important;}
+.province-hotspot[data-region="MZ"]{left:70.0%!important;top:44.5%!important;}
+.province-hotspot[data-region="LD"]{left:50.5%!important;top:55.5%!important;}
+.province-hotspot[data-region="LU"]{left:82.0%!important;top:61.5%!important;}
+.province-hotspot[data-region="DS"]{left:27.0%!important;top:67.0%!important;}
+.province-hotspot[data-region="OP"]{left:38.0%!important;top:74.5%!important;}
+.province-hotspot[data-region="SK"]{left:62.0%!important;top:67.5%!important;}
+.province-hotspot[data-region="SL"]{left:46.5%!important;top:80.0%!important;}
+.province-hotspot[data-region="MA"]{left:61.0%!important;top:82.0%!important;}
+.province-hotspot[data-region="PK"]{left:76.0%!important;top:81.5%!important;}
+
+.province-hotspot{
+  width:72px!important;
+  max-width:72px!important;
+  min-height:24px!important;
+  padding:3px 4px!important;
+  font-size:.49rem!important;
+  line-height:1.02!important;
+  border-radius:6px!important;
+}
+@media(max-width:620px){
+  .province-hotspot{
+    width:58px!important;
+    max-width:58px!important;
+    min-height:21px!important;
+    font-size:.42rem!important;
+    padding:2px 3px!important;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Naprawa stanu konta / panelu admina */
+#account-open[hidden],
+#account-admin-open[hidden],
+#account-logout[hidden],
+#account-panel[hidden],
+#admin-panel[hidden]{
+  display:none !important;
+}
+#account-admin-open:not([hidden]),
+#account-logout:not([hidden]){
+  display:inline-flex !important;
+}
+#account-open:not([hidden]){
+  display:inline-flex !important;
+}
+.account-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Osobna zakładka Odznaki */
+.tabs{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+#badges .badges-card{
+  margin-top:0 !important;
+}
+@media(max-width:700px){
+  .tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Codzienna seria w stylu aplikacji językowych */
+.streak-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  min-height:36px;
+  padding:6px 10px;
+  border:1px solid rgba(240,178,10,.34);
+  border-radius:999px;
+  background:rgba(240,178,10,.08);
+  font-family:var(--font-mono);
+  font-weight:900;
+  font-size:.78rem;
+  white-space:nowrap;
+}
+.streak-fire{
+  font-size:1rem;
+  line-height:1;
+}
+.streak-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin:0 0 18px;
+  padding:16px 18px;
+  border:1px solid rgba(240,178,10,.28);
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(240,178,10,.08),rgba(255,255,255,.025));
+}
+.streak-main{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+}
+.streak-big-fire{
+  display:grid;
+  place-items:center;
+  width:52px;
+  height:52px;
+  flex:0 0 52px;
+  border-radius:14px;
+  background:rgba(240,178,10,.11);
+  font-size:1.8rem;
+}
+.streak-card h3{
+  margin:3px 0 4px;
+  font-size:1.15rem;
+}
+.streak-card p{
+  margin:0;
+  color:var(--muted);
+  font-size:.82rem;
+}
+.streak-week{
+  display:grid;
+  grid-template-columns:repeat(7,28px);
+  gap:6px;
+}
+.streak-day{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+.streak-dot{
+  width:26px;
+  height:26px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:.68rem;
+  font-family:var(--font-mono);
+  font-weight:800;
+}
+.streak-dot.done{
+  border-color:rgba(240,178,10,.5);
+  background:rgba(240,178,10,.16);
+  color:#f0b20a;
+}
+.streak-dot.today{
+  box-shadow:0 0 0 2px rgba(240,178,10,.16);
+}
+.streak-day-label{
+  color:var(--muted);
+  font-family:var(--font-mono);
+  font-size:.58rem;
+  text-transform:uppercase;
+}
+@media(max-width:760px){
+  .streak-card{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .streak-week{
+    width:100%;
+    grid-template-columns:repeat(7,1fr);
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* Ranking i 3 ligi */
+.tabs{
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+}
+.league-card{
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:0 8px 24px rgba(18,28,43,.06);
+}
+.league-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+}
+.league-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.league-emblem{
+  display:grid;
+  place-items:center;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  border:3px solid #9b6a42;
+  background:rgba(155,106,66,.12);
+  color:#c08a5a;
+  font-family:var(--font-display);
+  font-size:1.25rem;
+  font-weight:900;
+}
+.league-emblem[data-league="silver"]{
+  border-color:#aeb7c0;
+  background:rgba(174,183,192,.10);
+  color:#d1d8df;
+}
+.league-emblem[data-league="gold"]{
+  border-color:#d5aa2f;
+  background:rgba(213,170,47,.11);
+  color:#f2c94c;
+}
+.league-title-wrap h2{
+  margin:4px 0 4px;
+}
+.league-title-wrap p{
+  margin:0;
+  color:var(--muted);
+  font-size:.88rem;
+}
+.league-week-xp{
+  min-width:150px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  text-align:right;
+}
+.league-week-xp strong{
+  display:block;
+  margin-top:4px;
+  font-size:1.05rem;
+}
+.league-progress{
+  margin:18px 0 10px;
+}
+.league-progress-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:7px;
+  font-size:.78rem;
+  font-family:var(--font-mono);
+}
+.league-progress-track{
+  height:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+}
+.league-progress-fill{
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#a86e40,#d0a06e);
+  transition:width .25s ease;
+}
+.league-note{
+  margin:12px 0 14px;
+  color:var(--muted);
+  font-size:.8rem;
+}
+.leaderboard{
+  display:grid;
+  gap:6px;
+}
+.leader-row{
+  display:grid;
+  grid-template-columns:42px 38px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:52px;
+  padding:8px 10px;
+  border:1px solid transparent;
+  border-radius:10px;
+}
+.leader-row.promotion{
+  background:rgba(104,160,129,.055);
+}
+.leader-row.you{
+  border-color:rgba(116,166,140,.55);
+  background:rgba(116,166,140,.10);
+}
+.leader-place{
+  text-align:center;
+  font-family:var(--font-mono);
+  font-weight:900;
+}
+.leader-avatar{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#202832;
+  font-weight:900;
+}
+.leader-name{
+  min-width:0;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.leader-name span{
+  margin-left:7px;
+  padding:2px 5px;
+  border-radius:999px;
+  background:rgba(116,166,140,.14);
+  color:#8fc3a4;
+  font-size:.58rem;
+  font-family:var(--font-mono);
+}
+.leader-xp{
+  font-family:var(--font-mono);
+  font-size:.78rem;
+  font-weight:800;
+}
+.league-legend{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:.72rem;
+}
+.rank-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  margin-right:5px;
+  border-radius:50%;
+}
+.rank-dot.promote{background:#6fa184}
+.rank-dot.safe{background:#59636f}
+@media(max-width:760px){
+  .tabs{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .league-top{flex-direction:column}
+  .league-week-xp{width:100%;text-align:left}
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.admin-league-box{
+  border-color:rgba(201,158,76,.34);
+}
+.admin-league-box h4{
+  color:#e0bc72;
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.custom-brand-logo{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:2px 0 8px;
+}
+.custom-brand-image{
+  display:block;
+  width:min(260px, 62vw);
+  height:auto;
+  max-height:118px;
+  object-fit:contain;
+  object-position:left center;
+  border-radius:10px;
+}
+/* Ukryj stary duży znak/nagłówek POLSKIFY, jeśli został w DOM jako fallback. */
+header .logo-mark,
+header .brand-title,
+header .brand-logo{
+  display:none !important;
+}
+@media(max-width:640px){
+  .custom-brand-image{
+    width:min(220px, 72vw);
+    max-height:96px;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.brand-icon-image{
+  display:block;
+  width:84px;
+  height:auto;
+  object-fit:contain;
+  flex:0 0 auto;
+  image-rendering:auto;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.18));
+}
+.brand-copy{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+.brand-copy .lead{
+  margin:10px 0 0;
+}
+.custom-brand-logo,
+.custom-brand-image{
+  display:none !important;
+}
+header .head{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+@media(max-width:640px){
+  .brand-icon-image{
+    width:62px;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+.brand-icon-image.symbol-only{
+  width:112px !important;
+  height:auto !important;
+  max-height:132px !important;
+  object-fit:contain !important;
+  filter:none !important;
+  image-rendering:auto;
+}
+header .head{
+  gap:14px !important;
+  align-items:center !important;
+}
+@media(max-width:640px){
+  .brand-icon-image.symbol-only{
+    width:78px !important;
+    max-height:94px !important;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* =========================================================
+   POLSKIFY — profesjonalna metamorfoza UI
+   ========================================================= */
+
+/* --- global --- */
+:root{
+  --bg:#0b1016;
+  --bg-2:#0e141c;
+  --surface:#131a23;
+  --surface-2:#18212c;
+  --surface-3:#1e2935;
+  --line:#2b3744;
+  --line-soft:#202b36;
+  --text:#f3f6fa;
+  --muted:#94a3b5;
+  --blue:#7eb0f4;
+  --blue-strong:#6fa4ee;
+  --gold:#e7b63f;
+  --green:#78a98b;
+  --danger:#d16e6e;
+  --shadow:0 18px 48px rgba(0,0,0,.24);
+  --shadow-soft:0 8px 24px rgba(0,0,0,.16);
+  --radius:16px;
+  --radius-sm:11px;
+}
+
+html{
+  background:var(--bg);
+  scroll-behavior:smooth;
+}
+
+body{
+  background:
+    radial-gradient(circle at 15% -10%, rgba(126,176,244,.08), transparent 32rem),
+    radial-gradient(circle at 100% 0%, rgba(231,182,63,.045), transparent 24rem),
+    linear-gradient(180deg,#0b1016 0%,#0d131b 100%);
+  color:var(--text);
+}
+
+.wrap{
+  max-width:74rem !important;
+  padding:28px 24px 70px !important;
+}
+
+/* --- header / brand --- */
+header{
+  padding:6px 0 22px;
+}
+
+header .head{
+  gap:18px !important;
+  align-items:center !important;
+}
+
+.brand-icon-image.symbol-only{
+  width:112px !important;
+  max-height:126px !important;
+  opacity:.96;
+}
+
+.brand-copy h1{
+  font-size:clamp(3rem,7vw,5.4rem) !important;
+  letter-spacing:.015em;
+  line-height:.82 !important;
+  text-shadow:0 8px 28px rgba(0,0,0,.18);
+}
+
+.brand-copy .lead{
+  margin-top:14px !important;
+  color:#9fb5cd !important;
+  font-size:1rem;
+  letter-spacing:.01em;
+}
+
+.flag{
+  height:5px !important;
+  margin:22px 0 14px !important;
+  border-radius:999px;
+  overflow:hidden;
+  box-shadow:none !important;
+}
+
+/* --- account bar --- */
+.account-bar{
+  gap:12px !important;
+  padding:12px 14px !important;
+  border:1px solid var(--line-soft) !important;
+  border-radius:14px !important;
+  background:rgba(19,26,35,.74) !important;
+  backdrop-filter:blur(10px);
+  box-shadow:var(--shadow-soft);
+}
+
+.account-copy{
+  min-width:0;
+  margin-right:auto;
+}
+
+.account-name{
+  font-size:.88rem !important;
+  color:#dce7f4;
+}
+
+.account-sub{
+  color:var(--muted) !important;
+}
+
+.xp-chip,
+.streak-chip{
+  min-height:38px !important;
+  border-radius:999px !important;
+  background:#111923 !important;
+  border-color:#314052 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.streak-chip{
+  color:#f0c56a;
+  border-color:rgba(231,182,63,.34) !important;
+  background:rgba(231,182,63,.07) !important;
+}
+
+.account-btn{
+  min-height:40px;
+  border-radius:10px !important;
+  border:1px solid #344253 !important;
+  background:#121922 !important;
+  color:#edf3f9 !important;
+  font-weight:800 !important;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease;
+}
+
+.account-btn:hover{
+  transform:translateY(-1px);
+  border-color:#52657a !important;
+  background:#18212c !important;
+}
+
+.account-btn.primary{
+  border-color:#75a5e6 !important;
+  background:linear-gradient(180deg,#78aaf0,#6798df) !important;
+  color:#08111d !important;
+}
+
+/* --- top navigation --- */
+.tabs{
+  margin:16px 0 18px !important;
+  padding:5px !important;
+  gap:5px !important;
+  border:1px solid #293543 !important;
+  border-radius:14px !important;
+  background:#d9e0e8 !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.16);
+  overflow:hidden;
+}
+
+.tab{
+  min-height:48px !important;
+  border-radius:10px !important;
+  border:0 !important;
+  color:#8fa0b4 !important;
+  font-weight:850 !important;
+  letter-spacing:-.01em;
+  transition:background .15s ease,color .15s ease,transform .15s ease;
+}
+
+.tab:hover:not(.locked-tab){
+  color:#213143 !important;
+  background:rgba(255,255,255,.34) !important;
+}
+
+.tab[aria-selected="true"]{
+  color:#fff !important;
+  background:linear-gradient(180deg,#294a6a,#203e5b) !important;
+  box-shadow:0 6px 14px rgba(24,48,72,.24),inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.locked-tab{
+  opacity:.6;
+}
+
+/* --- sections / typography --- */
+.panel{
+  animation:panelIn .22s ease both;
+}
+
+@keyframes panelIn{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+
+.panel h2{
+  font-size:clamp(1.5rem,3vw,2rem) !important;
+  letter-spacing:-.025em;
+  margin-bottom:8px !important;
+}
+
+.panel > p,
+.hero-copy p{
+  color:#b1c0cf !important;
+  line-height:1.55;
+}
+
+/* --- reusable cards --- */
+.badges-card,
+.badges-page,
+.streak-card,
+.league-card,
+.draw-card,
+.account-panel,
+.admin-panel{
+  border:1px solid var(--line) !important;
+  border-radius:var(--radius) !important;
+  background:linear-gradient(180deg,rgba(22,30,40,.97),rgba(16,23,31,.98)) !important;
+  box-shadow:var(--shadow) !important;
+}
+
+.streak-card{
+  padding:18px 20px !important;
+  border-color:rgba(231,182,63,.24) !important;
+}
+
+.streak-big-fire{
+  background:rgba(231,182,63,.10) !important;
+  border:1px solid rgba(231,182,63,.20);
+}
+
+/* --- map / first level --- */
+.modern-map-wrap,
+.map-stage,
+.pro-map-wrap{
+  border-radius:18px !important;
+}
+
+.pro-map-shell,
+.modern-map{
+  border:1px solid #334252 !important;
+  border-radius:18px !important;
+  overflow:hidden;
+  box-shadow:0 16px 38px rgba(0,0,0,.24);
+  background:#0a0f14 !important;
+}
+
+.pro-map-image{
+  filter:saturate(.92) contrast(1.02);
+}
+
+.province-shape{
+  transition:fill .16s ease,stroke .16s ease,filter .16s ease;
+}
+
+.province-shape:hover{
+  fill:rgba(126,176,244,.22) !important;
+  filter:drop-shadow(0 0 7px rgba(126,176,244,.18));
+}
+
+.province-shape.passed{
+  fill:rgba(112,166,136,.68) !important;
+  stroke:rgba(107,161,134,.95) !important;
+}
+
+/* --- quiz --- */
+.quiz-shell,
+.quiz-card,
+.question-card{
+  border-radius:var(--radius) !important;
+}
+
+.answer-btn,
+.option-btn{
+  border-radius:11px !important;
+  transition:transform .14s ease,border-color .14s ease,background .14s ease;
+}
+
+.answer-btn:hover,
+.option-btn:hover{
+  transform:translateY(-1px);
+}
+
+/* --- badges --- */
+.badges-grid{
+  gap:12px !important;
+}
+
+.badge-card{
+  min-height:138px !important;
+  border-radius:13px !important;
+  border-color:#2c3947 !important;
+  background:linear-gradient(180deg,#18212c,#141b24) !important;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease;
+}
+
+.badge-card:hover{
+  transform:translateY(-2px);
+  border-color:#44566a !important;
+}
+
+.badge-card.earned{
+  border-color:rgba(120,169,139,.55) !important;
+  background:linear-gradient(180deg,rgba(120,169,139,.13),#151f1b) !important;
+}
+
+.badge-icon{
+  box-shadow:none !important;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+/* --- ranking --- */
+.league-card{
+  padding:22px !important;
+}
+
+.league-emblem{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.league-week-xp{
+  border-color:#324153 !important;
+  background:#111923 !important;
+}
+
+.league-progress-track{
+  height:11px !important;
+  background:#202b36 !important;
+}
+
+.league-progress-fill{
+  background:linear-gradient(90deg,#9d7453,#d2a66f) !important;
+}
+
+.leaderboard{
+  gap:7px !important;
+}
+
+.leader-row{
+  min-height:56px !important;
+  border-radius:11px !important;
+  background:#17212a;
+  transition:transform .14s ease,background .14s ease,border-color .14s ease;
+}
+
+.leader-row:hover{
+  transform:translateX(2px);
+  background:#1b2631;
+}
+
+.leader-row.you{
+  border-color:rgba(120,169,139,.68) !important;
+  background:linear-gradient(90deg,rgba(120,169,139,.13),#18242c) !important;
+}
+
+.leader-avatar{
+  background:#202c38 !important;
+}
+
+/* --- draw level --- */
+.draw-board{
+  border-radius:16px !important;
+  overflow:hidden;
+  border:1px solid #334252 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+
+.draw-country-hint,
+.draw-neighbor-label{
+  text-shadow:0 1px 2px rgba(0,0,0,.65);
+}
+
+/* --- buttons --- */
+.btn{
+  min-height:44px;
+  padding:10px 16px !important;
+  border-radius:10px !important;
+  font-weight:850 !important;
+  transition:transform .14s ease,filter .14s ease;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn:not(.ghost){
+  background:linear-gradient(180deg,#7daef1,#6d9ee4) !important;
+  color:#09121d !important;
+  border-color:#8ab7f5 !important;
+}
+
+.btn.ghost{
+  background:#111820 !important;
+  border-color:#344151 !important;
+}
+
+/* --- forms / admin --- */
+.account-panel,
+.admin-panel{
+  padding:18px !important;
+  margin-top:12px !important;
+}
+
+.account-field input,
+.admin-xp-controls input{
+  background:#0e151d !important;
+  border:1px solid #344252 !important;
+  color:#fff !important;
+  border-radius:9px !important;
+}
+
+.account-field input:focus,
+.admin-xp-controls input:focus{
+  outline:none;
+  border-color:#6f9fdc !important;
+  box-shadow:0 0 0 3px rgba(111,159,220,.13);
+}
+
+.admin-xp-box{
+  background:#111923 !important;
+  border-color:#2e3b49 !important;
+}
+
+/* --- small polish --- */
+.mono{
+  letter-spacing:.08em;
+  color:#8aa5c2;
+}
+
+::selection{
+  background:rgba(126,176,244,.28);
+  color:#fff;
+}
+
+*{
+  scrollbar-width:thin;
+  scrollbar-color:#344151 #111821;
+}
+
+/* --- responsive --- */
+@media(max-width:900px){
+  .wrap{
+    padding:22px 16px 56px !important;
+  }
+  .account-bar{
+    align-items:flex-start;
+  }
+  .brand-icon-image.symbol-only{
+    width:92px !important;
+  }
+}
+
+@media(max-width:700px){
+  header .head{
+    align-items:flex-start !important;
+  }
+  .brand-icon-image.symbol-only{
+    width:74px !important;
+  }
+  .brand-copy h1{
+    font-size:clamp(2.7rem,14vw,4rem) !important;
+  }
+  .tabs{
+    border-radius:12px !important;
+  }
+  .league-top{
+    gap:14px !important;
+  }
+  .leader-row{
+    grid-template-columns:36px 34px minmax(0,1fr) auto !important;
+    gap:8px !important;
+  }
+}
+
+@media(max-width:480px){
+  .wrap{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+  .account-bar{
+    padding:10px !important;
+  }
+  .brand-icon-image.symbol-only{
+    width:64px !important;
+  }
+  .brand-copy .lead{
+    font-size:.88rem;
+  }
+  .league-card,
+  .badges-card,
+  .badges-page{
+    padding:15px !important;
+  }
+}
+
+/* ===== kolejny blok stylów z oryginalnego projektu ===== */
+
+/* =========================================================
+   POLSKIFY — REAL APP REDESIGN
+   ========================================================= */
+
+:root{
+  --app-bg:#0a0f15;
+  --app-panel:#111821;
+  --app-panel-2:#151e28;
+  --app-panel-3:#1a2531;
+  --app-border:#273441;
+  --app-border-strong:#354657;
+  --app-text:#f2f5f8;
+  --app-muted:#91a0b1;
+  --app-blue:#7aa7e8;
+  --app-blue-dark:#203b57;
+  --app-green:#78a58a;
+  --app-yellow:#e0b64c;
+}
+
+/* actual app shell */
+body{
+  background:
+    radial-gradient(circle at 80% -20%, rgba(122,167,232,.08), transparent 35rem),
+    #0a0f15 !important;
+}
+
+.wrap{
+  max-width:82rem !important;
+  margin:0 auto !important;
+  padding:22px 22px 64px !important;
+  display:grid !important;
+  grid-template-columns:210px minmax(0,1fr);
+  column-gap:24px;
+  align-items:start;
+}
+
+/* header is now a compact product header */
+header{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:
+    "brand account"
+    "flag flag"
+    "accountpanel accountpanel"
+    "admin admin";
+  align-items:center;
+  gap:16px 24px;
+  padding:8px 0 18px !important;
+}
+
+header .head{
+  grid-area:brand;
+  gap:14px !important;
+  min-width:0;
+}
+
+.brand-icon-image.symbol-only{
+  width:78px !important;
+  max-height:92px !important;
+  flex:0 0 auto;
+}
+
+.brand-copy h1{
+  font-size:clamp(2.8rem,5vw,4.35rem) !important;
+  line-height:.82 !important;
+  letter-spacing:.01em !important;
+}
+
+.brand-copy .lead{
+  margin-top:11px !important;
+  font-size:.92rem !important;
+  color:#8fa5ba !important;
+}
+
+.flag{
+  grid-area:flag;
+  height:4px !important;
+  margin:0 !important;
+  opacity:.92;
+}
+
+.account-bar{
+  grid-area:account;
+  width:auto !important;
+  min-width:0;
+  margin:0 !important;
+  padding:9px 10px !important;
+  border:1px solid var(--app-border) !important;
+  border-radius:13px !important;
+  background:#101720 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+
+.account-copy{
+  display:none !important;
+}
+
+.account-panel{
+  grid-area:accountpanel;
+}
+.admin-panel{
+  grid-area:admin;
+}
+
+/* vertical navigation — main visual change */
+.tabs{
+  grid-column:1;
+  position:sticky;
+  top:18px;
+  display:flex !important;
+  flex-direction:column;
+  align-items:stretch;
+  gap:7px !important;
+  margin:0 !important;
+  padding:9px !important;
+  border:1px solid var(--app-border) !important;
+  border-radius:15px !important;
+  background:#0f161f !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.24) !important;
+  overflow:visible !important;
+}
+
+.tab{
+  position:relative;
+  min-height:48px !important;
+  width:100%;
+  padding:0 13px 0 42px !important;
+  text-align:left !important;
+  border:1px solid transparent !important;
+  border-radius:10px !important;
+  background:transparent !important;
+  color:#8f9fb0 !important;
+  font-size:.86rem !important;
+  font-weight:800 !important;
+  letter-spacing:0 !important;
+}
+
+.tab::before{
+  position:absolute;
+  left:13px;
+  top:50%;
+  width:19px;
+  transform:translateY(-50%);
+  color:#708298;
+  font-family:Arial,sans-serif;
+  font-size:1rem;
+  text-align:center;
+}
+
+#tab-home::before{content:"⌂";}
+#tab-quiz::before{content:"✓";}
+#tab-draw::before{content:"✎";}
+#tab-badges::before{content:"◆";}
+#tab-ranking::before{content:"≡";}
+
+.tab:hover:not(.locked-tab){
+  background:#151f29 !important;
+  color:#dce6f0 !important;
+  border-color:#22303d !important;
+  transform:none !important;
+}
+
+.tab[aria-selected="true"]{
+  background:linear-gradient(90deg,#1c334a,#17293b) !important;
+  color:#fff !important;
+  border-color:#355574 !important;
+  box-shadow:inset 3px 0 0 #7aa7e8 !important;
+}
+
+.tab[aria-selected="true"]::before{
+  color:#8eb8f0;
+}
+
+.locked-tab{
+  opacity:.46 !important;
+}
+
+/* all actual content now sits in a dedicated right workspace */
+.panel{
+  grid-column:2;
+  width:100%;
+  min-width:0;
+  margin:0 !important;
+}
+
+.panel:not([hidden]){
+  animation:workspaceIn .2s ease both;
+}
+
+@keyframes workspaceIn{
+  from{opacity:0;transform:translateY(3px)}
+  to{opacity:1;transform:none}
+}
+
+/* home becomes a proper workspace card */
+#home .map-card{
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+#home .map-head{
+  margin-bottom:14px;
+}
+
+#home .map-head > div{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:
+    "streak streak"
+    "title status"
+    "copy status";
+  align-items:end;
+  gap:4px 18px;
+}
+
+#home .streak-card{
+  grid-area:streak;
+  margin:0 0 18px !important;
+  padding:13px 15px !important;
+  border:1px solid rgba(224,182,76,.20) !important;
+  border-radius:13px !important;
+  background:#121a22 !important;
+  box-shadow:none !important;
+}
+
+#home h2{
+  grid-area:title;
+  margin:0 !important;
+  font-size:1.7rem !important;
+}
+
+#home .map-head p{
+  grid-area:copy;
+  margin:5px 0 0 !important;
+  max-width:58ch;
+  color:var(--app-muted) !important;
+  font-size:.9rem;
+}
+
+#modern-map-status{
+  grid-area:status;
+  align-self:center;
+  margin:0 !important;
+  padding:8px 11px;
+  border:1px solid #2e3d4c;
+  border-radius:999px;
+  background:#111820;
+  color:#9fb0c2 !important;
+  white-space:nowrap;
+}
+
+#home .map-stage{
+  border:1px solid var(--app-border-strong) !important;
+  border-radius:16px !important;
+  overflow:hidden;
+  background:#080d12 !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.28) !important;
+}
+
+/* ranking — cleaner sports-table feel */
+#ranking .league-card{
+  padding:0 !important;
+  overflow:hidden;
+  border:1px solid var(--app-border) !important;
+  border-radius:16px !important;
+  background:#101720 !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.25) !important;
+}
+
+#ranking .league-top{
+  padding:22px 22px 18px;
+  background:linear-gradient(180deg,#151e28,#111821);
+  border-bottom:1px solid #23303c;
+}
+
+#ranking .league-progress,
+#ranking .league-note,
+#ranking .leaderboard,
+#ranking .league-legend{
+  margin-left:22px !important;
+  margin-right:22px !important;
+}
+
+#ranking .league-progress{
+  margin-top:18px !important;
+}
+
+#ranking .leaderboard{
+  margin-top:14px !important;
+  padding-bottom:4px;
+}
+
+#ranking .leader-row{
+  min-height:54px !important;
+  border-radius:9px !important;
+  background:transparent !important;
+  border:1px solid transparent !important;
+  border-bottom-color:#1f2a34 !important;
+}
+
+#ranking .leader-row:hover{
+  background:#151f29 !important;
+  transform:none !important;
+}
+
+#ranking .leader-row.you{
+  background:rgba(120,165,138,.09) !important;
+  border-color:rgba(120,165,138,.42) !important;
+}
+
+#ranking .league-legend{
+  padding:2px 0 18px;
+}
+
+/* badges — denser professional cards */
+#badges .badges-card{
+  padding:22px !important;
+  border:1px solid var(--app-border) !important;
+  border-radius:16px !important;
+  background:#101720 !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.24) !important;
+}
+
+#badges .badges-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+
+#badges .badge-card{
+  min-height:132px !important;
+  padding:13px !important;
+  border-radius:11px !important;
+  background:#141d27 !important;
+  border:1px solid #263442 !important;
+  box-shadow:none !important;
+}
+
+#badges .badge-card:hover{
+  transform:none !important;
+  border-color:#3a4b5d !important;
+}
+
+#badges .badge-card.earned{
+  background:linear-gradient(180deg,rgba(120,165,138,.12),#131c19) !important;
+}
+
+/* draw challenge — no giant decorative card */
+#draw .draw-card,
+#draw .draw-lock-box{
+  border:1px solid var(--app-border) !important;
+  border-radius:16px !important;
+  background:#101720 !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.24) !important;
+}
+
+#draw .draw-board{
+  border-color:#31404f !important;
+  background:#080d12 !important;
+}
+
+/* admin + account become modal-ish utility areas */
+.account-panel,
+.admin-panel{
+  width:100%;
+  border-radius:14px !important;
+  border:1px solid #304052 !important;
+  background:#111821 !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.28) !important;
+}
+
+.admin-xp-box{
+  background:#0d141c !important;
+  border-color:#283644 !important;
+}
+
+/* buttons simplified */
+.btn,
+.account-btn{
+  box-shadow:none !important;
+}
+
+.btn:not(.ghost),
+.account-btn.primary{
+  background:#77a6e7 !important;
+  border-color:#77a6e7 !important;
+  color:#08111b !important;
+}
+
+.btn:not(.ghost):hover,
+.account-btn.primary:hover{
+  background:#86b2ec !important;
+  border-color:#86b2ec !important;
+}
+
+/* desktop content sizing */
+#home,
+#ranking,
+#badges,
+#draw,
+#quiz{
+  max-width:none !important;
+}
+
+/* responsive: collapse back to top tabs */
+@media(max-width:900px){
+  .wrap{
+    display:block !important;
+    max-width:58rem !important;
+    padding:18px 15px 54px !important;
+  }
+
+  header{
+    display:block;
+    padding-bottom:14px !important;
+  }
+
+  header .head{
+    margin-bottom:15px;
+  }
+
+  .account-bar{
+    margin-top:12px !important;
+  }
+
+  .flag{
+    margin-top:15px !important;
+  }
+
+  .tabs{
+    position:static;
+    display:grid !important;
+    grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+    gap:4px !important;
+    margin:0 0 17px !important;
+    padding:5px !important;
+  }
+
+  .tab{
+    min-height:46px !important;
+    padding:0 7px !important;
+    text-align:center !important;
+    font-size:.76rem !important;
+  }
+
+  .tab::before{
+    display:none;
+  }
+
+  .tab[aria-selected="true"]{
+    box-shadow:none !important;
+  }
+
+  .panel{
+    width:100%;
+  }
+
+  #badges .badges-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:620px){
+  .brand-icon-image.symbol-only{
+    width:64px !important;
+  }
+
+  .tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  #home .map-head > div{
+    display:block;
+  }
+
+  #modern-map-status{
+    display:inline-block !important;
+    margin-top:10px !important;
+  }
+
+  #badges .badges-grid{
+    grid-template-columns:1fr 1fr !important;
+  }
+}
+
+
+/* =========================================================
+   POLSKIFY — MOBILE COLOR / READABILITY FIX
+   =========================================================
+   The app is intentionally dark even when the phone itself
+   uses Light Mode. These variables must therefore not depend
+   on prefers-color-scheme.
+*/
+:root{
+  color-scheme:dark !important;
+  --bg:#0a0f15 !important;
+  --surface:#151e28 !important;
+  --surface-2:#202b37 !important;
+  --surface-3:#253241 !important;
+  --ink:#f2f6fb !important;
+  --muted:#9dafc2 !important;
+  --line:#344353 !important;
+  --blue:#7aa7e8 !important;
+  --blue-soft:#1b3048 !important;
+  --on-blue:#08111b !important;
+  --gold:#f0bd3e !important;
+  --on-gold:#211900 !important;
+  --good:#65c58e !important;
+  --good-soft:#173328 !important;
+  --bad:#ff7465 !important;
+  --bad-soft:#3b1e1b !important;
+}
+
+body{
+  color:var(--ink) !important;
+}
+
+/* Quiz has to stay readable on iPhone/Android light system theme */
+#quiz,
+#quiz .card-box,
+#quiz .question,
+#quiz .qhead,
+#quiz .mono{
+  color:var(--ink) !important;
+}
+
+#quiz .mono{
+  color:#9fb3ca !important;
+}
+
+#quiz .opt{
+  color:#eef4fb !important;
+  background:#121a23 !important;
+  border-color:#344556 !important;
+  -webkit-tap-highlight-color:transparent;
+}
+
+#quiz .opt:disabled{
+  color:#eef4fb !important;
+  opacity:1 !important;
+}
+
+#quiz .opt .key{
+  color:#cbd9e8 !important;
+  background:#1c2835 !important;
+  border:1px solid #2c3b4a;
+}
+
+#quiz .opt:not(:disabled):active{
+  background:#1b2c40 !important;
+  border-color:#73a5e8 !important;
+}
+
+#quiz .btn.ghost,
+#quiz button.btn.ghost{
+  color:#dce8f5 !important;
+  background:#111922 !important;
+  border-color:#405164 !important;
+}
+
+#quiz .btn.ghost:disabled{
+  color:#738397 !important;
+  opacity:.65;
+}
+
+#quiz .seg{
+  background:#1b2733 !important;
+}
+
+#quiz .seg.now{ background:#f0bd3e !important; }
+#quiz .seg.ok{ background:#71a7ec !important; }
+#quiz .seg.no{ background:#d74b3d !important; }
+
+#quiz .fb-in{
+  color:var(--ink) !important;
+  background:#18232f !important;
+}
+
+#quiz .fb-explain{
+  color:#a8b7c8 !important;
+}
+
+/* iPhone-sized layout */
+@media(max-width:620px){
+  .wrap{
+    padding:12px 12px calc(34px + env(safe-area-inset-bottom,0px)) !important;
+  }
+
+  #quiz{
+    width:100% !important;
+  }
+
+  #quiz .card-box{
+    padding:18px 14px !important;
+    border-radius:14px !important;
+  }
+
+  #quiz .card-box > .mono:first-child{
+    font-size:.78rem !important;
+    letter-spacing:.10em !important;
+  }
+
+  #quiz h2{
+    font-size:clamp(2rem,9vw,2.75rem) !important;
+    line-height:1.02 !important;
+    overflow-wrap:anywhere;
+  }
+
+  #quiz .about{
+    font-size:.96rem !important;
+    line-height:1.55 !important;
+  }
+
+  #quiz .qhead{
+    align-items:center !important;
+    font-size:.85rem !important;
+  }
+
+  #quiz .question{
+    font-size:1.35rem !important;
+    line-height:1.28 !important;
+  }
+
+  #quiz .opts{
+    gap:11px !important;
+    margin-top:16px !important;
+  }
+
+  #quiz .opt{
+    min-height:64px !important;
+    padding:12px 13px !important;
+    gap:11px !important;
+    border-width:1.5px !important;
+    border-radius:11px !important;
+    font-size:1rem !important;
+    line-height:1.35 !important;
+  }
+
+  #quiz .opt .key{
+    width:34px !important;
+    height:34px !important;
+    border-radius:8px !important;
+    font-size:.85rem !important;
+  }
+
+  #quiz .segs{
+    gap:5px !important;
+    margin:10px 0 20px !important;
+  }
+
+  #quiz .seg{
+    height:7px !important;
+  }
+
+  /* prevent horizontal overflow */
+  .panel,
+  .card-box,
+  .opts,
+  .opt{
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+}
+
+/* ===== POLSKIFY 2.0 — PROFILE / QUESTS / SHOP / THEME ===== */
+.profile-shell{display:grid;gap:16px}
+.profile-hero,.profile-card{
+  border:1px solid var(--app-border,#2a3745);
+  border-radius:16px;
+  background:linear-gradient(180deg,#131c26,#0f161e);
+  box-shadow:0 18px 42px rgba(0,0,0,.22)
+}
+.profile-hero{display:flex;align-items:center;gap:20px;padding:20px}
+.profile-avatar-wrap{display:grid;justify-items:center;gap:9px}
+.profile-frame{width:92px;height:92px;border-radius:24px;display:grid;place-items:center;background:#101923;border:3px solid #344354}
+.profile-avatar{font-size:2.55rem;line-height:1}
+.frame-basic{border-color:#46586b}
+.frame-blue{border-color:#75a9ed;box-shadow:0 0 0 4px rgba(117,169,237,.09)}
+.frame-gold{border-color:#e8b94d;box-shadow:0 0 18px rgba(232,185,77,.18)}
+.frame-green{border-color:#79b391;box-shadow:0 0 18px rgba(121,179,145,.15)}
+.profile-main{min-width:0;flex:1}
+.profile-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.profile-name-row h2{margin:3px 0 6px!important}
+.profile-chips{display:flex;gap:8px;flex-wrap:wrap}
+.profile-chips span{padding:7px 10px;border-radius:999px;border:1px solid #304050;background:#111923;color:#dbe7f4;font-size:.82rem;font-weight:800}
+.mini-btn{border:1px solid #354657;background:#111923;color:#dce7f3;border-radius:9px;padding:7px 10px;font-weight:800;cursor:pointer}
+.mini-btn:hover{background:#182330}
+.profile-stats-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.profile-stat{display:grid;gap:3px;padding:14px 10px;border:1px solid #273543;border-radius:12px;background:#111821;text-align:center}
+.profile-stat b{font-size:1.25rem}
+.profile-stat span{font-size:.76rem;color:#94a5b7}
+.profile-grid-2{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
+.profile-card{padding:18px}
+.profile-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.profile-card-head h3{margin:2px 0 0}
+.profile-card-head>span{color:#a9bbcd;font-size:.82rem}
+.quest{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:11px 0;border-bottom:1px solid #202c37}
+.quest:last-child{border-bottom:0}
+.quest-title{font-weight:850}
+.quest-sub{color:#91a3b6;font-size:.8rem;margin-top:3px}
+.quest-right{display:grid;justify-items:end;gap:5px}
+.quest-reward{font-weight:850;color:#efc45c}
+.quest-bar{width:120px;height:8px;border-radius:999px;background:#202b36;overflow:hidden}
+.quest-bar>i{display:block;height:100%;background:#79a9ea;border-radius:999px}
+.quest.done .quest-bar>i{background:#78ad8b}
+.quest.done .quest-title{color:#a8d4b7}
+.shop-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.shop-item{padding:14px;border:1px solid #2b3947;border-radius:12px;background:#121a23}
+.shop-preview{height:64px;display:grid;place-items:center;margin-bottom:9px}
+.shop-preview .profile-frame{transform:scale(.58)}
+.shop-item h4{margin:0 0 5px}
+.shop-item p{margin:0 0 10px;color:#91a3b6;font-size:.8rem}
+.shop-item .btn{width:100%;min-height:38px}
+.theme-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.theme-actions{display:flex;gap:8px}
+body[data-theme="light"]{
+  --app-bg:#eef3f7;--app-panel:#ffffff;--app-panel-2:#f6f9fc;--app-border:#d5dee7;--app-text:#17202b;--app-muted:#617286;
+  background:#eef3f7!important;color:#17202b!important
+}
+body[data-theme="light"] .profile-hero,
+body[data-theme="light"] .profile-card,
+body[data-theme="light"] .profile-stat,
+body[data-theme="light"] .account-bar,
+body[data-theme="light"] .tabs,
+body[data-theme="light"] .league-card,
+body[data-theme="light"] .badges-card{
+  background:#fff!important;color:#17202b!important;border-color:#d6e0e9!important
+}
+body[data-theme="light"] .mini-btn,
+body[data-theme="light"] .profile-chips span,
+body[data-theme="light"] .shop-item{
+  background:#f4f7fa!important;color:#243344!important;border-color:#d5dee7!important
+}
+body[data-theme="light"] .tab{color:#607286!important}
+body[data-theme="light"] .tab[aria-selected="true"]{color:white!important}
+.league-filter{display:flex;gap:7px;flex-wrap:wrap;margin:12px 22px 0}
+.league-filter button{border:1px solid #314052;background:#101821;color:#aebfd1;border-radius:999px;padding:7px 10px;font-weight:800;cursor:pointer}
+.league-filter button.active{background:#25425f;color:#fff;border-color:#466a8d}
+@media(max-width:900px){
+  .profile-stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .profile-grid-2{grid-template-columns:1fr}
+  .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .profile-hero{align-items:flex-start;padding:15px;gap:13px}
+  .profile-frame{width:74px;height:74px;border-radius:20px}
+  .profile-avatar{font-size:2rem}
+  .profile-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shop-grid{grid-template-columns:1fr 1fr}
+  .profile-card{padding:14px}
+  .quest{grid-template-columns:1fr}
+  .quest-right{justify-items:start}
+  .quest-bar{width:100%}
+}
+
+/* POLSKIFY 2.0 Phase 1 hotfix */
+@media(max-width:900px){
+  .tabs{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+}
+@media(max-width:560px){
+  .tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+/* Profile sync/layout hotfix */
+#profile.panel{
+  width:100%;
+  min-width:0;
+}
+#profile[hidden]{
+  display:none !important;
+}
+
+/* ===== POLSKIFY 3.0 ===== */
+.feature-page{display:grid;gap:16px}
+.feature-hero{border:1px solid var(--app-border,#2b3947);border-radius:16px;padding:22px;background:linear-gradient(135deg,#141f2a,#101720)}
+.feature-hero h2{margin:5px 0 6px}.feature-hero p{margin:0;color:#99aabc}
+.study-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px}
+.study-region-list{display:grid;gap:6px;align-content:start;max-height:620px;overflow:auto;padding:8px;border:1px solid #283746;border-radius:14px;background:#0f161f}
+.study-region-btn{border:0;border-radius:9px;background:transparent;color:#a9b8c8;text-align:left;padding:10px 12px;font-weight:800;cursor:pointer}
+.study-region-btn:hover{background:#18232e;color:#fff}
+.study-card{min-height:420px;border:1px solid #2b3947;border-radius:16px;background:#111923;padding:24px}
+.study-placeholder{display:grid;place-items:center;height:100%;min-height:360px;color:#8192a4}
+.study-desc{color:#a9b8c8;max-width:60ch;line-height:1.6}
+.study-facts{display:grid;gap:8px;margin:20px 0}
+.study-facts>div{display:flex;gap:10px;padding:11px 12px;border-radius:10px;background:#17212b;border:1px solid #253442}
+.special-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.special-card{min-height:130px;display:grid;align-content:center;gap:7px;text-align:left;padding:18px;border:1px solid #2c3b4a;border-radius:14px;background:#111923;color:#eef4fb;cursor:pointer;transition:.15s}
+.special-card:hover{transform:translateY(-2px);border-color:#52749a;background:#172331}
+.special-card b{font-size:1.05rem}.special-card span{color:#95a8bb}
+.result-hero-pro{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;margin:20px 0;padding:18px;border:1px solid #2c3b49;border-radius:16px;background:#101821}
+.result-ring{--p:0;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#78a9ea calc(var(--p)*1%),#202b36 0)}
+.result-ring:before{content:"";position:absolute}.result-ring>div{width:102px;height:102px;border-radius:50%;display:grid;place-items:center;background:#101821;text-align:center}
+.result-ring strong{font-size:1.8rem}.result-ring span{font-size:.72rem;color:#90a2b6}
+.result-summary-pro h3{margin:5px 0}.result-summary-pro p{color:#9fb0c2;margin:0}
+.season-banner{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:12px 15px;border:1px solid #3a4b5c;border-radius:12px;background:linear-gradient(90deg,#182333,#111923)}
+.season-banner span{font-size:.7rem;letter-spacing:.12em;color:#85a7c9}.season-banner strong{font-size:.95rem}.season-banner small{margin-left:auto;color:#9fb0c0}
+.admin-v2-box{margin-top:16px;padding:14px;border:1px solid #2e3b49;border-radius:12px;background:#0e151d}
+.admin-v2-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.admin-v2-head h4{margin:0}.admin-v2-head p{margin:3px 0;color:#91a2b4}
+.admin-user-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #24313d}.admin-user-row small{display:block;color:#91a2b4;margin-top:3px}
+.admin-user-actions{display:flex;gap:6px;flex-wrap:wrap}.admin-user-actions button{border:1px solid #344555;background:#141e28;color:#e7eef6;border-radius:8px;padding:7px 9px;font-weight:800;cursor:pointer}
+@media(max-width:900px){.study-layout{grid-template-columns:1fr}.study-region-list{grid-template-columns:repeat(2,1fr);max-height:none}.special-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.special-grid{grid-template-columns:1fr}.study-region-list{grid-template-columns:1fr}.result-hero-pro{grid-template-columns:1fr;text-align:center}.result-ring{margin:auto}.admin-user-row{display:grid}}
+
+
+/* ===== QUIZ ANSWER HIGHLIGHT HOTFIX =====
+   Mobile readability rules used !important and were overriding
+   the green/red correct/wrong states.
+*/
+#quiz .opt.correct,
+#quiz .opt.correct:disabled{
+  border-color:#65c58e !important;
+  background:#173328 !important;
+  color:#f2fff7 !important;
+  box-shadow:0 0 0 1px rgba(101,197,142,.22), inset 0 0 24px rgba(101,197,142,.08) !important;
+}
+
+#quiz .opt.correct .key,
+#quiz .opt.correct:disabled .key{
+  background:#65c58e !important;
+  border-color:#65c58e !important;
+  color:#08140d !important;
+}
+
+#quiz .opt.wrong,
+#quiz .opt.wrong:disabled{
+  border-color:#ff7465 !important;
+  background:#3b1e1b !important;
+  color:#fff5f3 !important;
+  box-shadow:0 0 0 1px rgba(255,116,101,.18), inset 0 0 24px rgba(255,116,101,.06) !important;
+}
+
+#quiz .opt.wrong .key,
+#quiz .opt.wrong:disabled .key{
+  background:#ff7465 !important;
+  border-color:#ff7465 !important;
+  color:#24100d !important;
+}
+
+#quiz .opt.checking{
+  opacity:.72 !important;
+  cursor:wait !important;
+}
+
+/* ===== PROFILE TITLES + ADMIN COINS ===== */
+.profile-title-line{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:4px 0 9px}
+.profile-title-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid #3b4a5b;border-radius:999px;font-size:.78rem;font-weight:950;letter-spacing:.025em;background:#131d27}
+.title-change-btn{padding:6px 9px!important;font-size:.72rem}
+.title-odkrywca{color:#c0cedc;border-color:#46586b!important;background:#16202a!important}
+.title-kartograf{color:#a9d4ff;border-color:#477db0!important;background:#13263a!important}
+.title-mistrz{color:#d1b6ff;border-color:#7654a6!important;background:#241934!important}
+.title-zloty{color:#ffe49a;border-color:#a77c21!important;background:#332812!important;box-shadow:0 0 18px rgba(232,185,77,.08)}
+.title-seria{color:#ffc29b;border-color:#a55b2d!important;background:#321e14!important}
+.title-polskify{color:#f6e7ae;border-color:#b89737!important;background:linear-gradient(90deg,#352713,#242017)!important}
+.title-legenda{color:#fff2a7;border-color:#cf9b26!important;background:linear-gradient(100deg,#33220f,#3a1839,#162c3d)!important;box-shadow:0 0 22px rgba(207,155,38,.14)}
+.title-admin{color:#8fd4ff;border-color:#397da6!important;background:#102c3c!important}
+.title-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.title-option{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px;text-align:left;border:1px solid #2d3b49;border-radius:11px;background:#121b24;color:#eaf1f8;cursor:pointer}
+.title-option:hover:not(:disabled){border-color:#52708e;background:#17232e}
+.title-option.selected{box-shadow:inset 3px 0 0 #7aa7e8}
+.title-option.locked{opacity:.42;cursor:not-allowed}
+.title-option-icon{font-size:1.45rem;text-align:center}
+.title-option b{display:block;font-size:.9rem}.title-option small{display:block;color:#8fa1b3;font-size:.72rem;margin-top:3px}
+.title-option em{font-style:normal;color:#8fa1b3;font-size:.68rem;font-weight:800}
+.admin-coins-box{margin-bottom:12px}
+.admin-coins-controls{display:grid;grid-template-columns:minmax(120px,1fr) repeat(4,auto);gap:7px;margin-top:12px}
+.admin-coins-controls input{min-width:0;background:#0c131b;color:#fff;border:1px solid #344555;border-radius:9px;padding:9px 10px;font-weight:800}
+#admin-coins-status{color:#f0c45d}
+@media(max-width:700px){
+  .title-picker{grid-template-columns:1fr}
+  .admin-coins-controls{grid-template-columns:1fr 1fr}
+  .admin-coins-controls input{grid-column:1/-1}
+}

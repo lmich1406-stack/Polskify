@@ -1,0 +1,6 @@
+Finalna poprawka coinów i tytułów:
+- usunięto błąd JS z wywołaniem nieistniejącej funkcji,
+- profil czyta dane przez dedykowany RPC get_my_profile_meta,
+- admin ma osobne bezpieczne RPC do ustawiania i dodawania własnych coinów,
+- +100 / +1000 nie zależą od starego stanu w przeglądarce,
+- po każdej zmianie profil pobiera świeże dane z Supabase.

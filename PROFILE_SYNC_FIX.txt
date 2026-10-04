@@ -1,0 +1,10 @@
+Naprawiono właściwą przyczynę:
+- Profil był osobnym modułem JavaScript i NIE miał dostępu do currentUser, getXP(), getLeagueState(), getStreak() itd.
+- dlatego wpadał w wartości awaryjne: Poziom 1 i Liga Brązowa.
+- profil jest teraz podłączony do głównego stanu aplikacji przez PolskifyCore.
+- zakładka Profil jest częścią tego samego systemu VIEWS co Start/Ranking/Odznaki.
+- profil został przeniesiony do głównego kontenera, więc nie pojawia się już pod inną zakładką.
+- statystyki quizów są przekazywane bezpośrednim eventem zamiast próby odczytu prywatnych zmiennych.
+- cache PWA ponownie zmieniony.
+
+Po nowym deployu zamknij starą kartę i otwórz polskify.netlify.app ponownie.

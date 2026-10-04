@@ -1,0 +1,11 @@
+HOTFIX
+- Naprawiono brak zakładki Profil.
+- Powodem było niedopasowanie poprzedniej automatycznej podmiany HTML.
+- Zmieniono cache PWA, żeby Netlify/telefon nie trzymał starej wersji.
+- Poprawiono układ 6 zakładek na telefonie.
+
+Po deployu:
+1. Wgraj ten folder jako nowy deploy na Netlify.
+2. Na telefonie zamknij kartę Polskify całkowicie i otwórz ponownie.
+3. Jeśli nadal pokazuje starą wersję, odśwież stronę 2 razy.
+4. Powinna pojawić się nowa zakładka „Profil”.

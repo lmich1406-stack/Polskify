@@ -1,0 +1,8 @@
+Naprawiono ligę na profilu.
+Profil używa teraz tego samego stanu ligi co ranking/Supabase i dodatkowo
+przelicza ligę z tygodniowego XP:
+- 0-499: Brązowa
+- 500-1199: Srebrna
+- 1200+: Złota
+
+Po deployu zamknij kartę Polskify i otwórz ją ponownie, żeby ominąć stary cache.

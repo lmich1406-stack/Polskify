@@ -1,0 +1,5 @@
+Naprawa tytułów profilu:
+- odblokowane tytuły są teraz liczone bezpośrednio z aktualnego XP, ligi, zaliczonych województw, streaka i statusu admina,
+- RPC z Supabase jest tylko dodatkową weryfikacją i nie blokuje interfejsu,
+- przycisk „Zmień tytuł” odświeża listę przed pokazaniem,
+- po quizie lista odblokowanych tytułów odświeża się automatycznie.

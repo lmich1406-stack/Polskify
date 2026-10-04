@@ -1,0 +1,6 @@
+Naprawa synchronizacji coinów i tytułów:
+- profil ładuje dane z Supabase po zalogowaniu, a nie tylko przy pierwszym DOMContentLoaded,
+- otwarcie zakładki Profil wymusza świeży odczyt,
+- po zmianie coinów przez admina UI pobiera stan z bazy,
+- po zmianie tytułu profil również odświeża dane z bazy,
+- podbito cache PWA.

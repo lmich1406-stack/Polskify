@@ -1,0 +1,5 @@
+Naprawa ligi v2:
+- błąd powodował wywołanie nieistniejącej funkcji leagueInfo(), więc profil wpadał w catch i zawsze pokazywał Ligę Brązową.
+- teraz profil używa currentLeagueInfo(), czyli dokładnie tej samej funkcji co Ranking.
+- dodatkowo kopiuje widoczną nazwę ligi z rankingu, jeśli ranking jest już wyrenderowany.
+- cache PWA zmieniony ponownie.
