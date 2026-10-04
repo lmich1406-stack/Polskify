@@ -1,5 +1,5 @@
-const CACHE='polskify-titles-ui-fix-1';
-const ASSETS=['./','./index.html','./style.css','./app.js','./backend.js','./config.js','./manifest.webmanifest'];
+const CACHE='polskify-brand-logo-1';
+const ASSETS=['./','./index.html','./style.css','./app.js','./backend.js','./config.js','./manifest.webmanifest','./polskify-logo.svg'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))])));
 self.addEventListener('fetch',e=>{
