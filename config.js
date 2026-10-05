@@ -8,7 +8,7 @@ window.POLSKIFY_CONFIG = {
   // Dołącz nowy motyw Concept D bez ruszania starego CSS.
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=1';
+  css.href = 'metamorphosis-d.css?v=2';
   document.head.appendChild(css);
 
   document.addEventListener('DOMContentLoaded', function () {
