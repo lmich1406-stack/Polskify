@@ -7,7 +7,7 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=4';
+  css.href = 'metamorphosis-d.css?v=5';
   document.head.appendChild(css);
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -30,22 +30,21 @@ window.POLSKIFY_CONFIG = {
 
     header.insertBefore(tabs, accountBar);
 
-    var tabIcons = {
-      'tab-home':'⌂ ',
-      'tab-quiz':'🏆 ',
-      'tab-draw':'✎ ',
-      'tab-badges':'◆ ',
-      'tab-ranking':'▥ ',
-      'tab-profile':'● ',
-      'tab-learn':'▤ ',
-      'tab-challenges':'★ '
+    var tabNames = {
+      'tab-home':'Start',
+      'tab-quiz':'Quiz regionów',
+      'tab-draw':'Narysuj Polskę',
+      'tab-badges':'Odznaki',
+      'tab-ranking':'Ranking',
+      'tab-profile':'Profil',
+      'tab-learn':'Nauka',
+      'tab-challenges':'Quizy+'
     };
-    Object.keys(tabIcons).forEach(function (id) {
+    Object.keys(tabNames).forEach(function (id) {
       var el = document.getElementById(id);
-      if (!el || el.dataset.conceptDIcon === '1') return;
-      var text = (el.textContent || '').replace(/^🔒\s*/, '').trim();
-      el.textContent = tabIcons[id] + text;
-      el.dataset.conceptDIcon = '1';
+      if (!el) return;
+      el.textContent = tabNames[id];
+      el.removeAttribute('data-concept-d-icon');
     });
 
     var flag = document.querySelector('.flag');
