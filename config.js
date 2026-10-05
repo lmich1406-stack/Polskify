@@ -5,14 +5,12 @@ window.POLSKIFY_CONFIG = {
 };
 
 (function () {
-  // Dołącz nowy motyw Concept D bez ruszania starego CSS.
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=3';
+  css.href = 'metamorphosis-d.css?v=4';
   document.head.appendChild(css);
 
   document.addEventListener('DOMContentLoaded', function () {
-    // Usuń przypadkowy tekst "\\n", który trafiał na samą górę strony.
     Array.prototype.slice.call(document.body.childNodes).forEach(function (node) {
       if (node.nodeType === 3 && /^\s*\\n\s*$/.test(node.nodeValue || '')) node.remove();
     });
@@ -23,7 +21,6 @@ window.POLSKIFY_CONFIG = {
     var accountBar = document.querySelector('.account-bar');
     if (!header || !head || !tabs || !accountBar) return;
 
-    // Logo Concept D.
     head.innerHTML = '';
     var logo = document.createElement('img');
     logo.src = 'polskify-concept-d.svg?v=1';
@@ -31,10 +28,8 @@ window.POLSKIFY_CONFIG = {
     logo.className = 'concept-d-logo';
     head.appendChild(logo);
 
-    // Nawigacja ma być na górze, pomiędzy logo a profilem.
     header.insertBefore(tabs, accountBar);
 
-    // Krótsze ikonowe etykiety tylko przez aria/tekst — logika zakładek zostaje ta sama.
     var tabIcons = {
       'tab-home':'⌂ ',
       'tab-quiz':'🏆 ',
@@ -53,7 +48,6 @@ window.POLSKIFY_CONFIG = {
       el.dataset.conceptDIcon = '1';
     });
 
-    // Ukryj starą dekoracyjną linię — nowy header ma własną linię premium.
     var flag = document.querySelector('.flag');
     if (flag) flag.setAttribute('aria-hidden', 'true');
   });
