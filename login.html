@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Logowanie • Polskify</title>
+  <meta name="theme-color" content="#07121f">
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#07121f;color:#f7f8fb}body{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#10283b 0,#07121f 45%,#040b13 100%)}
+    .card{width:min(440px,100%);background:#0b1926;border:1px solid #27435d;border-radius:22px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
+    .brand{text-align:center;margin-bottom:22px}.brand h1{margin:0;color:#f4c542;font:800 34px Georgia,serif;letter-spacing:.06em}.brand p{margin:7px 0 0;color:#9fb2c6;font-size:12px;letter-spacing:.15em}
+    h2{margin:0 0 8px;font-size:26px}.sub{margin:0 0 22px;color:#9fb2c6;line-height:1.5}.field{margin:14px 0}.field label{display:block;margin-bottom:7px;font-size:13px;color:#c8d4df}.field input{width:100%;height:48px;border-radius:12px;border:1px solid #35516a;background:#08131e;color:#fff;padding:0 14px;font-size:16px;outline:none}.field input:focus{border-color:#f4c542;box-shadow:0 0 0 3px rgba(244,197,66,.12)}
+    .primary,.secondary{width:100%;height:48px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer}.primary{margin-top:10px;background:#f4c542;color:#14110a}.primary:disabled{opacity:.65;cursor:wait}.secondary{margin-top:10px;background:#122436;color:#dce6ef;border:1px solid #2e4b64}.back{display:block;text-align:center;margin-top:18px;color:#9fb2c6;text-decoration:none}.msg{min-height:22px;margin:14px 0 0;font-size:14px;color:#ffb7b7}.msg.ok{color:#9ee8b0}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand"><h1>POLSKIFY</h1><p>POLSKA REGION PO REGIONIE</p></div>
+    <h2 id="title">Zaloguj się</h2>
+    <p class="sub" id="subtitle">Zaloguj się do swojego konta i wróć do Polskify.</p>
+    <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" placeholder="np. imie@email.com"></div>
+    <div class="field"><label for="password">Hasło</label><input id="password" type="password" autocomplete="current-password" placeholder="Hasło"></div>
+    <button class="primary" id="submit" type="button">Zaloguj się</button>
+    <button class="secondary" id="switch" type="button">Nie masz konta? Załóż konto</button>
+    <div class="msg" id="msg" aria-live="polite"></div>
+    <a class="back" href="./">← Wróć do Polskify</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="backend.js"></script>
+  <script>
+    (function(){
+      var mode='login';
+      var title=document.getElementById('title');
+      var subtitle=document.getElementById('subtitle');
+      var submit=document.getElementById('submit');
+      var sw=document.getElementById('switch');
+      var msg=document.getElementById('msg');
+      var email=document.getElementById('email');
+      var password=document.getElementById('password');
+
+      function render(){
+        var login=mode==='login';
+        title.textContent=login?'Zaloguj się':'Załóż konto';
+        subtitle.textContent=login?'Zaloguj się do swojego konta i wróć do Polskify.':'Utwórz konto Polskify.';
+        submit.textContent=login?'Zaloguj się':'Załóż konto';
+        sw.textContent=login?'Nie masz konta? Załóż konto':'Masz już konto? Zaloguj się';
+        password.autocomplete=login?'current-password':'new-password';
+        msg.textContent=''; msg.className='msg';
+      }
+
+      function prettyError(err){
+        var t=(err&&err.message)||String(err||'Nieznany błąd');
+        if(/invalid login credentials/i.test(t)) return 'Nieprawidłowy e-mail lub hasło.';
+        if(/password/i.test(t)&&/6/i.test(t)) return 'Hasło musi mieć co najmniej 6 znaków.';
+        if(/already registered|already been registered/i.test(t)) return 'To konto już istnieje. Spróbuj się zalogować.';
+        return t;
+      }
+
+      async function go(){
+        var e=(email.value||'').trim().toLowerCase();
+        var p=password.value||'';
+        if(!e||!p){msg.textContent='Wpisz e-mail i hasło.';return;}
+        submit.disabled=true; msg.textContent='';
+        try{
+          if(!window.PolskifyBackend||!window.PolskifyBackend.isConfigured()) throw new Error('Logowanie jest chwilowo niedostępne.');
+          var data=mode==='login' ? await window.PolskifyBackend.signIn(e,p) : await window.PolskifyBackend.signUp(e,p);
+          if(mode==='register' && (!data || !data.session)){
+            msg.textContent='Konto utworzone. Jeśli wymagane jest potwierdzenie e-maila, zrób to i potem się zaloguj.';
+            msg.className='msg ok';
+            mode='login'; render(); return;
+          }
+          msg.textContent='Gotowe. Wracam do Polskify…'; msg.className='msg ok';
+          location.replace('./');
+        }catch(err){msg.textContent=prettyError(err);}
+        finally{submit.disabled=false;}
+      }
+
+      sw.addEventListener('click',function(){mode=mode==='login'?'register':'login';render();});
+      submit.addEventListener('click',go);
+      password.addEventListener('keydown',function(e){if(e.key==='Enter')go();});
+      email.addEventListener('keydown',function(e){if(e.key==='Enter')password.focus();});
+
+      if(window.PolskifyBackend&&window.PolskifyBackend.isConfigured()){
+        window.PolskifyBackend.getSession().then(function(s){if(s&&s.user) location.replace('./');}).catch(function(){});
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>
