@@ -7,14 +7,14 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=10';
+  css.href = 'metamorphosis-d.css?v=11';
   document.head.appendChild(css);
 
   var scrollStyle = document.createElement('style');
   scrollStyle.textContent = [
-    'body.polskify-scrolled header{height:0!important;min-height:0!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important;pointer-events:none!important;}',
-    'body.polskify-scrolled header:after{display:none!important;}',
-    'body.polskify-scrolled .account-bar{position:fixed!important;top:12px!important;right:18px!important;left:auto!important;width:auto!important;margin:0!important;padding:0!important;gap:7px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;z-index:1500!important;pointer-events:auto!important;}',
+    'header.topbar-only{height:0!important;min-height:0!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important;pointer-events:none!important;}',
+    'header.topbar-only:after{display:none!important;}',
+    'header.topbar-only .account-bar{position:fixed!important;top:12px!important;right:18px!important;left:auto!important;width:auto!important;margin:0!important;padding:0!important;gap:7px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;z-index:1500!important;pointer-events:auto!important;}',
     'body.polskify-scrolled .account-copy,',
     'body.polskify-scrolled .account-bar .xp-chip,',
     'body.polskify-scrolled #account-open,',
@@ -24,7 +24,7 @@ window.POLSKIFY_CONFIG = {
     'body.polskify-scrolled #account-admin-open:not([hidden]){display:inline-flex!important;}',
     'body.polskify-scrolled .streak-chip{display:inline-flex!important;min-height:34px!important;padding:4px 10px!important;}',
     'body.polskify-scrolled #account-admin-open{min-height:34px!important;padding:4px 10px!important;}',
-    '@media(max-width:680px){body.polskify-scrolled .account-bar{top:8px!important;right:8px!important;}}'
+    '@media(max-width:680px){header.topbar-only .account-bar{top:8px!important;right:8px!important;}}'
   ].join('\n');
   document.head.appendChild(scrollStyle);
 
