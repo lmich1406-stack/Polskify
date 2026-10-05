@@ -117,3 +117,42 @@ body[data-theme="light"] .card-box,body[data-theme="light"] .map-card,body[data-
   .account-actions .account-btn{padding-inline:8px!important}
   #home .pro-map-stage,#home .map-stage{max-width:none!important}
 }
+
+/* Compact admin popup + aligned top-right controls */
+.account-bar .xp-chip,
+.account-bar .streak-chip,
+.account-bar .account-btn,
+.account-actions .account-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  vertical-align:middle!important;
+}
+.account-bar .xp-chip{min-height:36px!important}
+.account-actions{align-items:center!important}
+
+.admin-panel{
+  position:fixed!important;
+  top:68px!important;
+  right:18px!important;
+  left:auto!important;
+  width:min(720px,calc(100vw - 36px))!important;
+  max-height:calc(100vh - 86px)!important;
+  overflow:auto!important;
+  margin:0!important;
+  padding:14px!important;
+  z-index:1450!important;
+  border-radius:14px!important;
+  box-shadow:0 22px 60px rgba(0,0,0,.42)!important;
+}
+.admin-panel[hidden]{display:none!important}
+.admin-panel h3{margin-top:0!important}
+.admin-panel .admin-regions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+@media(max-width:760px){
+  .admin-panel{top:58px!important;right:8px!important;width:calc(100vw - 16px)!important;max-height:calc(100vh - 70px)!important}
+  .admin-panel .admin-regions{grid-template-columns:1fr!important}
+}
