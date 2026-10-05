@@ -7,7 +7,7 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=6';
+  css.href = 'metamorphosis-d.css?v=7';
   document.head.appendChild(css);
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -70,7 +70,7 @@ window.POLSKIFY_CONFIG = {
 
       var foot = document.createElement('div');
       foot.className = 'sidebar-foot';
-      foot.innerHTML = '<span class="sidebar-poland">⌁</span><strong>WIEDZA O POLSCE</strong><small>w jednym miejscu</small>';
+      foot.innerHTML = '<strong>WIEDZA O POLSCE</strong><small>w jednym miejscu</small>';
       sidebar.appendChild(foot);
 
       wrap.insertBefore(sidebar, header);
