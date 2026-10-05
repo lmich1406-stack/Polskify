@@ -7,7 +7,7 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=13';
+  css.href = 'metamorphosis-d.css?v=14';
   document.head.appendChild(css);
 
   var scrollStyle = document.createElement('style');
@@ -26,6 +26,7 @@ window.POLSKIFY_CONFIG = {
     'body.polskify-scrolled #account-admin-open:not([hidden]){display:inline-flex!important;}',
     'body.polskify-scrolled .streak-chip{display:inline-flex!important;min-height:36px!important;height:36px!important;padding:0 10px!important;}',
     'body.polskify-scrolled #account-admin-open{min-height:36px!important;height:36px!important;padding:0 10px!important;}',
+    '#account-panel{display:none!important;}',
     '#admin-backdrop{position:fixed!important;inset:0!important;z-index:1480!important;background:rgba(2,8,15,.24)!important;pointer-events:auto!important;}',
     '#admin-backdrop[hidden]{display:none!important;}',
     '#admin-panel{position:fixed!important;top:62px!important;right:16px!important;left:auto!important;bottom:auto!important;width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100vh - 78px)!important;overflow:auto!important;margin:0!important;padding:14px!important;z-index:1490!important;border-radius:14px!important;box-shadow:0 24px 70px rgba(0,0,0,.48)!important;transform:none!important;pointer-events:auto!important;}',
@@ -115,10 +116,20 @@ window.POLSKIFY_CONFIG = {
     var flag = document.querySelector('.flag');
     if (flag) flag.setAttribute('aria-hidden', 'true');
 
+    var accountOpen = document.getElementById('account-open');
+    var accountPanel = document.getElementById('account-panel');
+    if (accountPanel) accountPanel.hidden = true;
+    if (accountOpen) {
+      accountOpen.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        window.location.href = 'login.html';
+      }, true);
+    }
+
     var adminPanel = document.getElementById('admin-panel');
     if (adminPanel) {
       if (adminPanel.parentNode !== document.body) document.body.appendChild(adminPanel);
-
       var adminBackdrop = document.getElementById('admin-backdrop');
       if (!adminBackdrop) {
         adminBackdrop = document.createElement('div');
@@ -126,35 +137,16 @@ window.POLSKIFY_CONFIG = {
         adminBackdrop.hidden = true;
         document.body.appendChild(adminBackdrop);
       }
-
       function syncAdminModal() {
         var open = !adminPanel.hidden;
         adminBackdrop.hidden = !open;
         document.body.classList.toggle('admin-modal-open', open);
       }
-
-      new MutationObserver(syncAdminModal).observe(adminPanel, {
-        attributes: true,
-        attributeFilter: ['hidden']
-      });
-
-      adminBackdrop.addEventListener('pointerdown', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }, true);
-      adminBackdrop.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        adminPanel.hidden = true;
-        syncAdminModal();
-      }, true);
-      adminPanel.addEventListener('pointerdown', function (e) {
-        e.stopPropagation();
-      });
-      adminPanel.addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
-
+      new MutationObserver(syncAdminModal).observe(adminPanel, { attributes: true, attributeFilter: ['hidden'] });
+      adminBackdrop.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); }, true);
+      adminBackdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); adminPanel.hidden = true; syncAdminModal(); }, true);
+      adminPanel.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      adminPanel.addEventListener('click', function (e) { e.stopPropagation(); });
       syncAdminModal();
     }
 
