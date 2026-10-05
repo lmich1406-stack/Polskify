@@ -23,11 +23,21 @@ window.POLSKIFY_CONFIG = {
     if (!wrap || !header || !head || !tabs || !accountBar) return;
 
     head.innerHTML = '';
-    var logo = document.createElement('img');
-    logo.src = 'polskify-concept-d.svg?v=1';
-    logo.alt = 'Polskify';
-    logo.className = 'concept-d-logo';
-    head.appendChild(logo);
+    var brandRow = document.createElement('div');
+    brandRow.setAttribute('style','display:flex;align-items:center;gap:10px;width:100%;');
+
+    var mark = document.createElement('img');
+    mark.src = 'polskify-mark.png?v=1';
+    mark.alt = 'Polskify';
+    mark.setAttribute('style','width:48px!important;height:48px!important;object-fit:contain!important;flex:0 0 48px!important;filter:none!important;');
+
+    var brandText = document.createElement('div');
+    brandText.setAttribute('style','min-width:0;line-height:1;');
+    brandText.innerHTML = '<div style="font-family:Georgia,Times New Roman,serif;font-size:24px;font-weight:800;letter-spacing:.04em;color:#f4c542;white-space:nowrap;">POLSKIFY</div><div style="margin-top:5px;font-family:Arial,Helvetica,sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#f8f6ef;white-space:nowrap;">POLSKA REGION PO REGIONIE</div>';
+
+    brandRow.appendChild(mark);
+    brandRow.appendChild(brandText);
+    head.appendChild(brandRow);
 
     var tabNames = {
       'tab-home':'Start',
