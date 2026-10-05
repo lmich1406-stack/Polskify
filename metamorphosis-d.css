@@ -40,10 +40,10 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;ba
 .sidebar-foot small{display:block!important;font-size:.58rem!important;letter-spacing:.12em!important;text-transform:uppercase!important;color:#8ea1b6!important}
 
 /* TOP BAR */
-header{grid-column:2!important;grid-row:1!important;position:sticky!important;top:0!important;z-index:50!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:72px!important;padding:10px 0!important;margin:0!important;background:linear-gradient(180deg,rgba(5,13,23,.985),rgba(7,17,31,.94))!important;backdrop-filter:blur(16px)!important;border-bottom:1px solid rgba(59,130,246,.20)!important}
-header:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,rgba(244,197,66,.42),rgba(59,130,246,.22),transparent)}
+header{grid-column:2!important;grid-row:1!important;position:sticky!important;top:0!important;z-index:50!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:72px!important;padding:10px 0!important;margin:0!important;background:transparent!important;backdrop-filter:none!important;border:0!important;box-shadow:none!important}
+header:after{display:none!important}
 header>.head,header>.tabs,.flag{display:none!important}
-.account-bar{display:flex!important;position:static!important;width:auto!important;margin:0!important;justify-content:flex-end!important;align-items:center!important;gap:7px!important;min-width:0!important}
+.account-bar{display:flex!important;position:static!important;width:auto!important;margin:0!important;justify-content:flex-end!important;align-items:center!important;gap:7px!important;min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
 .account-bar:before{display:none!important}
 .account-bar .xp-chip,.streak-chip,.account-btn{background:linear-gradient(180deg,#0f2137,#0a1727)!important;border:1px solid #294665!important;color:#f8f6ef!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}
 .account-bar .xp-chip{border-radius:10px!important;padding:7px 10px!important;font-size:.73rem!important}
@@ -95,7 +95,7 @@ h1,h2,h3,h4,strong,b{color:var(--d-text)}
 
 body[data-theme="light"]{background:#eef3f8!important;color:#132033!important}
 body[data-theme="light"] .app-sidebar{background:#f8fafc!important;border-right-color:#d5dee7!important}
-body[data-theme="light"] header{background:rgba(246,249,252,.96)!important}
+body[data-theme="light"] header{background:transparent!important}
 body[data-theme="light"] .app-sidebar .tab{color:#566a7f!important}
 body[data-theme="light"] .app-sidebar .tab[aria-selected="true"]{color:#132033!important;background:#e9f0f7!important}
 body[data-theme="light"] .card-box,body[data-theme="light"] .map-card,body[data-theme="light"] .league-card,body[data-theme="light"] .badges-card,body[data-theme="light"] .profile-card,body[data-theme="light"] .profile-hero{background:#fff!important;color:#132033!important;border-color:#d4dee8!important}
