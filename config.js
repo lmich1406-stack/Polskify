@@ -7,24 +7,29 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=11';
+  css.href = 'metamorphosis-d.css?v=12';
   document.head.appendChild(css);
 
   var scrollStyle = document.createElement('style');
   scrollStyle.textContent = [
     'header.topbar-only{height:0!important;min-height:0!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important;pointer-events:none!important;}',
     'header.topbar-only:after{display:none!important;}',
-    'header.topbar-only .account-bar{position:fixed!important;top:12px!important;right:18px!important;left:auto!important;width:auto!important;margin:0!important;padding:0!important;gap:7px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;z-index:1500!important;pointer-events:auto!important;}',
+    'header.topbar-only .account-bar{position:fixed!important;top:12px!important;right:18px!important;left:auto!important;width:auto!important;margin:0!important;padding:0!important;gap:8px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;z-index:1500!important;pointer-events:auto!important;align-items:center!important;}',
+    'header.topbar-only .account-actions{display:flex!important;align-items:center!important;gap:8px!important;}',
+    'header.topbar-only .xp-chip,header.topbar-only .streak-chip,header.topbar-only .account-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important;min-height:38px!important;height:38px!important;padding-top:0!important;padding-bottom:0!important;white-space:nowrap!important;}',
     'body.polskify-scrolled .account-copy,',
     'body.polskify-scrolled .account-bar .xp-chip,',
     'body.polskify-scrolled #account-open,',
     'body.polskify-scrolled #account-logout{display:none!important;}',
-    'body.polskify-scrolled .account-actions{display:flex!important;gap:7px!important;}',
+    'body.polskify-scrolled .account-actions{display:flex!important;gap:8px!important;align-items:center!important;}',
     'body.polskify-scrolled #account-admin-open[hidden]{display:none!important;}',
     'body.polskify-scrolled #account-admin-open:not([hidden]){display:inline-flex!important;}',
-    'body.polskify-scrolled .streak-chip{display:inline-flex!important;min-height:34px!important;padding:4px 10px!important;}',
-    'body.polskify-scrolled #account-admin-open{min-height:34px!important;padding:4px 10px!important;}',
-    '@media(max-width:680px){header.topbar-only .account-bar{top:8px!important;right:8px!important;}}'
+    'body.polskify-scrolled .streak-chip{display:inline-flex!important;min-height:36px!important;height:36px!important;padding:0 10px!important;}',
+    'body.polskify-scrolled #account-admin-open{min-height:36px!important;height:36px!important;padding:0 10px!important;}',
+    '#admin-panel{position:fixed!important;top:62px!important;right:16px!important;left:auto!important;bottom:auto!important;width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100vh - 78px)!important;overflow:auto!important;margin:0!important;padding:14px!important;z-index:1490!important;border-radius:14px!important;box-shadow:0 24px 70px rgba(0,0,0,.48)!important;transform:none!important;}',
+    '#admin-panel[hidden]{display:none!important;}',
+    '#admin-panel .admin-regions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}',
+    '@media(max-width:680px){header.topbar-only .account-bar{top:8px!important;right:8px!important;}#admin-panel{top:54px!important;right:8px!important;width:calc(100vw - 16px)!important;max-width:none!important;max-height:calc(100vh - 66px)!important;}#admin-panel .admin-regions{grid-template-columns:1fr!important;}}'
   ].join('\n');
   document.head.appendChild(scrollStyle);
 
