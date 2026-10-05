@@ -7,8 +7,25 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=8';
+  css.href = 'metamorphosis-d.css?v=9';
   document.head.appendChild(css);
+
+  var scrollStyle = document.createElement('style');
+  scrollStyle.textContent = [
+    'body.polskify-scrolled header{min-height:52px!important;padding:6px 0!important;background:transparent!important;border-bottom:0!important;box-shadow:none!important;backdrop-filter:none!important;pointer-events:none!important;}',
+    'body.polskify-scrolled header:after{display:none!important;}',
+    'body.polskify-scrolled .account-bar{pointer-events:auto!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;}',
+    'body.polskify-scrolled .account-copy,',
+    'body.polskify-scrolled .account-bar .xp-chip,',
+    'body.polskify-scrolled #account-open,',
+    'body.polskify-scrolled #account-logout{display:none!important;}',
+    'body.polskify-scrolled .account-actions{display:flex!important;}',
+    'body.polskify-scrolled #account-admin-open[hidden]{display:none!important;}',
+    'body.polskify-scrolled #account-admin-open:not([hidden]){display:inline-flex!important;}',
+    'body.polskify-scrolled .streak-chip{display:inline-flex!important;}',
+    'body.polskify-scrolled .account-bar{gap:7px!important;}'
+  ].join('\n');
+  document.head.appendChild(scrollStyle);
 
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.slice.call(document.body.childNodes).forEach(function (node) {
@@ -92,5 +109,11 @@ window.POLSKIFY_CONFIG = {
     header.classList.add('topbar-only');
     var flag = document.querySelector('.flag');
     if (flag) flag.setAttribute('aria-hidden', 'true');
+
+    function updateScrollState() {
+      document.body.classList.toggle('polskify-scrolled', window.scrollY > 90);
+    }
+    updateScrollState();
+    window.addEventListener('scroll', updateScrollState, { passive: true });
   });
 })();
