@@ -7,7 +7,7 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=7';
+  css.href = 'metamorphosis-d.css?v=8';
   document.head.appendChild(css);
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -24,14 +24,17 @@ window.POLSKIFY_CONFIG = {
 
     head.innerHTML = '';
     var brandRow = document.createElement('div');
+    brandRow.className = 'polskify-brand-row';
     brandRow.setAttribute('style','display:flex;align-items:center;gap:10px;width:100%;');
 
     var mark = document.createElement('img');
-    mark.src = 'polskify-mark.png?v=1';
+    mark.src = 'polskify-logo.svg?v=3';
     mark.alt = 'Polskify';
+    mark.className = 'polskify-brand-mark';
     mark.setAttribute('style','width:48px!important;height:48px!important;object-fit:contain!important;flex:0 0 48px!important;filter:none!important;');
 
     var brandText = document.createElement('div');
+    brandText.className = 'polskify-brand-copy';
     brandText.setAttribute('style','min-width:0;line-height:1;');
     brandText.innerHTML = '<div style="font-family:Georgia,Times New Roman,serif;font-size:24px;font-weight:800;letter-spacing:.04em;color:#f4c542;white-space:nowrap;">POLSKIFY</div><div style="margin-top:5px;font-family:Arial,Helvetica,sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#f8f6ef;white-space:nowrap;">POLSKA REGION PO REGIONIE</div>';
 
