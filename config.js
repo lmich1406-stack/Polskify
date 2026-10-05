@@ -7,7 +7,7 @@ window.POLSKIFY_CONFIG = {
 (function () {
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = 'metamorphosis-d.css?v=12';
+  css.href = 'metamorphosis-d.css?v=13';
   document.head.appendChild(css);
 
   var scrollStyle = document.createElement('style');
@@ -26,9 +26,13 @@ window.POLSKIFY_CONFIG = {
     'body.polskify-scrolled #account-admin-open:not([hidden]){display:inline-flex!important;}',
     'body.polskify-scrolled .streak-chip{display:inline-flex!important;min-height:36px!important;height:36px!important;padding:0 10px!important;}',
     'body.polskify-scrolled #account-admin-open{min-height:36px!important;height:36px!important;padding:0 10px!important;}',
-    '#admin-panel{position:fixed!important;top:62px!important;right:16px!important;left:auto!important;bottom:auto!important;width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100vh - 78px)!important;overflow:auto!important;margin:0!important;padding:14px!important;z-index:1490!important;border-radius:14px!important;box-shadow:0 24px 70px rgba(0,0,0,.48)!important;transform:none!important;}',
+    '#admin-backdrop{position:fixed!important;inset:0!important;z-index:1480!important;background:rgba(2,8,15,.24)!important;pointer-events:auto!important;}',
+    '#admin-backdrop[hidden]{display:none!important;}',
+    '#admin-panel{position:fixed!important;top:62px!important;right:16px!important;left:auto!important;bottom:auto!important;width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100vh - 78px)!important;overflow:auto!important;margin:0!important;padding:14px!important;z-index:1490!important;border-radius:14px!important;box-shadow:0 24px 70px rgba(0,0,0,.48)!important;transform:none!important;pointer-events:auto!important;}',
+    '#admin-panel *{pointer-events:auto!important;}',
     '#admin-panel[hidden]{display:none!important;}',
     '#admin-panel .admin-regions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}',
+    'body.admin-modal-open{overflow:hidden!important;}',
     '@media(max-width:680px){header.topbar-only .account-bar{top:8px!important;right:8px!important;}#admin-panel{top:54px!important;right:8px!important;width:calc(100vw - 16px)!important;max-width:none!important;max-height:calc(100vh - 66px)!important;}#admin-panel .admin-regions{grid-template-columns:1fr!important;}}'
   ].join('\n');
   document.head.appendChild(scrollStyle);
@@ -60,7 +64,6 @@ window.POLSKIFY_CONFIG = {
     brandText.className = 'polskify-brand-copy';
     brandText.setAttribute('style','min-width:0;line-height:1;');
     brandText.innerHTML = '<div style="font-family:Georgia,Times New Roman,serif;font-size:24px;font-weight:800;letter-spacing:.04em;color:#f4c542;white-space:nowrap;">POLSKIFY</div><div style="margin-top:5px;font-family:Arial,Helvetica,sans-serif;font-size:7px;font-weight:700;letter-spacing:.22em;color:#f8f6ef;white-space:nowrap;">POLSKA REGION PO REGIONIE</div>';
-
     brandRow.appendChild(mark);
     brandRow.appendChild(brandText);
     head.appendChild(brandRow);
@@ -96,25 +99,64 @@ window.POLSKIFY_CONFIG = {
       sidebar = document.createElement('aside');
       sidebar.id = 'app-sidebar';
       sidebar.className = 'app-sidebar';
-
       var brand = document.createElement('div');
       brand.className = 'sidebar-brand';
       brand.appendChild(head);
       sidebar.appendChild(brand);
-
       sidebar.appendChild(tabs);
-
       var foot = document.createElement('div');
       foot.className = 'sidebar-foot';
       foot.innerHTML = '<strong>WIEDZA O POLSCE</strong><small>w jednym miejscu</small>';
       sidebar.appendChild(foot);
-
       wrap.insertBefore(sidebar, header);
     }
 
     header.classList.add('topbar-only');
     var flag = document.querySelector('.flag');
     if (flag) flag.setAttribute('aria-hidden', 'true');
+
+    var adminPanel = document.getElementById('admin-panel');
+    if (adminPanel) {
+      if (adminPanel.parentNode !== document.body) document.body.appendChild(adminPanel);
+
+      var adminBackdrop = document.getElementById('admin-backdrop');
+      if (!adminBackdrop) {
+        adminBackdrop = document.createElement('div');
+        adminBackdrop.id = 'admin-backdrop';
+        adminBackdrop.hidden = true;
+        document.body.appendChild(adminBackdrop);
+      }
+
+      function syncAdminModal() {
+        var open = !adminPanel.hidden;
+        adminBackdrop.hidden = !open;
+        document.body.classList.toggle('admin-modal-open', open);
+      }
+
+      new MutationObserver(syncAdminModal).observe(adminPanel, {
+        attributes: true,
+        attributeFilter: ['hidden']
+      });
+
+      adminBackdrop.addEventListener('pointerdown', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
+      adminBackdrop.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        adminPanel.hidden = true;
+        syncAdminModal();
+      }, true);
+      adminPanel.addEventListener('pointerdown', function (e) {
+        e.stopPropagation();
+      });
+      adminPanel.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+
+      syncAdminModal();
+    }
 
     function updateScrollState() {
       document.body.classList.toggle('polskify-scrolled', window.scrollY > 90);
