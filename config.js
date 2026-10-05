@@ -28,7 +28,7 @@ window.POLSKIFY_CONFIG = {
     brandRow.setAttribute('style','display:flex;align-items:center;gap:10px;width:100%;');
 
     var mark = document.createElement('img');
-    mark.src = 'polskify-logo.svg?v=3';
+    mark.src = 'polskify-mark.png?v=2';
     mark.alt = 'Polskify';
     mark.className = 'polskify-brand-mark';
     mark.setAttribute('style','width:48px!important;height:48px!important;object-fit:contain!important;flex:0 0 48px!important;filter:none!important;');
