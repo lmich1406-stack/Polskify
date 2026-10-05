@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 150" role="img" aria-labelledby="t d">
+<title id="t">Polskify</title><desc id="d">Polskify Concept D logo</desc>
+<defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a8"/><stop offset=".35" stop-color="#f4c542"/><stop offset=".72" stop-color="#d89b19"/><stop offset="1" stop-color="#fff2b0"/></linearGradient>
+  <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1e3a"/><stop offset="1" stop-color="#061221"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g transform="translate(10 10)">
+  <rect x="0" y="0" width="130" height="130" rx="28" fill="url(#navy)" stroke="#244c7d" stroke-width="2"/>
+  <path d="M28 38 45 31 53 22 73 16 86 22 99 20 113 31 111 46 119 57 112 69 117 83 108 94 108 108 94 116 80 112 66 119 55 111 42 113 35 102 24 98 24 84 16 73 23 61 18 49Z" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round" filter="url(#glow)"/>
+  <circle cx="67" cy="67" r="24" fill="#0b1e3a" stroke="#f8f6ef" stroke-width="7"/>
+  <circle cx="67" cy="67" r="17" fill="#0b1e3a" stroke="#f4c542" stroke-width="3"/>
+  <path d="M67 45 73 61 89 67 73 73 67 89 61 73 45 67 61 61Z" fill="url(#gold)"/>
+</g>
+<g transform="translate(165 22)">
+  <text x="0" y="72" font-family="Georgia, 'Times New Roman', serif" font-size="70" font-weight="700" letter-spacing="2" fill="url(#gold)">POLSKIFY</text>
+  <line x1="3" y1="93" x2="420" y2="93" stroke="#f4c542" stroke-width="2" opacity=".85"/>
+  <text x="4" y="120" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="600" letter-spacing="5" fill="#f8f6ef">POLSKA REGION PO REGIONIE</text>
+</g>
+</svg>
