@@ -1,4 +1,4 @@
-/* Polskify — Concept D / Sidebar V6 */
+/* Polskify — Concept D / Sidebar V7 */
 :root{
   --d-navy:#07111f;
   --d-navy-2:#0b1e3a;
@@ -18,10 +18,10 @@ html,body{background:radial-gradient(circle at 74% -10%,#12365f 0,#081526 31%,#0
 body{min-height:100vh}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;background-image:radial-gradient(circle at 18% 18%,rgba(244,197,66,.10),transparent 26%),linear-gradient(120deg,transparent 0 48%,rgba(59,130,246,.045) 49%,transparent 50%)}
 
-.wrap{max-width:none!important;width:min(1500px,100%)!important;margin:0 auto!important;padding:0 22px 44px!important;display:grid!important;grid-template-columns:var(--sidebar-w) minmax(0,1fr)!important;grid-template-rows:auto!important;column-gap:28px!important;align-items:start!important}
+.wrap{max-width:none!important;width:min(1500px,100%)!important;margin:0 auto!important;padding:0 22px 44px!important;display:grid!important;grid-template-columns:var(--sidebar-w) minmax(0,1fr)!important;grid-template-rows:auto 1fr!important;column-gap:28px!important;align-items:start!important}
 
 /* LEFT SIDEBAR */
-.app-sidebar{grid-column:1!important;grid-row:1 / span 999!important;position:sticky!important;top:0!important;height:100vh!important;align-self:start!important;padding:24px 14px 18px!important;background:linear-gradient(180deg,rgba(5,14,25,.99),rgba(6,18,31,.985))!important;border-right:1px solid rgba(55,88,119,.28)!important;box-shadow:18px 0 50px rgba(0,0,0,.18)!important;display:flex!important;flex-direction:column!important;z-index:60!important}
+.app-sidebar{grid-column:1!important;grid-row:1 / span 2!important;position:sticky!important;top:0!important;height:100vh!important;align-self:start!important;padding:24px 14px 18px!important;background:linear-gradient(180deg,rgba(5,14,25,.99),rgba(6,18,31,.985))!important;border-right:1px solid rgba(55,88,119,.28)!important;box-shadow:18px 0 50px rgba(0,0,0,.18)!important;display:flex!important;flex-direction:column!important;z-index:60!important}
 .sidebar-brand{padding:0 10px 22px!important;border-bottom:1px solid rgba(244,197,66,.18)!important}
 .sidebar-brand .head{display:block!important;width:100%!important}
 .sidebar-brand .head img{display:block!important;width:186px!important;max-width:100%!important;height:auto!important;filter:drop-shadow(0 6px 18px rgba(0,0,0,.26))}
@@ -34,11 +34,13 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.06;ba
 .app-sidebar .side-icon{width:22px!important;text-align:center!important;font-size:1.05rem!important;color:#a9bed4!important;flex:none!important}
 .app-sidebar .tab[aria-selected="true"] .side-icon{color:var(--d-gold)!important}
 .app-sidebar .side-label{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important}
-.sidebar-foot{margin-top:auto!important;padding:20px 10px 8px!important;border-top:1px solid rgba(244,197,66,.16)!important;text-align:center!important;display:grid!important;gap:5px!important;color:#d9b64c!important}
-.sidebar-foot .sidebar-poland{font-size:2rem!important;line-height:1!important}.sidebar-foot strong{font-size:.66rem!important;letter-spacing:.22em!important}.sidebar-foot small{font-size:.58rem!important;letter-spacing:.17em!important;text-transform:uppercase!important;color:#8ea1b6!important}
+.sidebar-foot{margin-top:auto!important;padding:18px 10px 6px!important;border-top:1px solid rgba(244,197,66,.16)!important;text-align:center!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:5px!important;color:#d9b64c!important}
+.sidebar-foot .sidebar-poland{display:none!important}
+.sidebar-foot strong{display:block!important;font-size:.64rem!important;letter-spacing:.18em!important;line-height:1.4!important}
+.sidebar-foot small{display:block!important;font-size:.58rem!important;letter-spacing:.12em!important;text-transform:uppercase!important;color:#8ea1b6!important}
 
 /* TOP BAR */
-header{grid-column:2!important;grid-row:auto!important;position:sticky!important;top:0!important;z-index:50!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:72px!important;padding:10px 0!important;margin:0!important;background:linear-gradient(180deg,rgba(5,13,23,.985),rgba(7,17,31,.94))!important;backdrop-filter:blur(16px)!important;border-bottom:1px solid rgba(59,130,246,.20)!important}
+header{grid-column:2!important;grid-row:1!important;position:sticky!important;top:0!important;z-index:50!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:72px!important;padding:10px 0!important;margin:0!important;background:linear-gradient(180deg,rgba(5,13,23,.985),rgba(7,17,31,.94))!important;backdrop-filter:blur(16px)!important;border-bottom:1px solid rgba(59,130,246,.20)!important}
 header:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,rgba(244,197,66,.42),rgba(59,130,246,.22),transparent)}
 header>.head,header>.tabs,.flag{display:none!important}
 .account-bar{display:flex!important;position:static!important;width:auto!important;margin:0!important;justify-content:flex-end!important;align-items:center!important;gap:7px!important;min-width:0!important}
@@ -53,7 +55,7 @@ header>.head,header>.tabs,.flag{display:none!important}
 .admin-panel{grid-column:2!important;background:#0a1523!important;border-color:#294665!important}
 
 /* MAIN CONTENT */
-.wrap>section,.wrap>.panel{grid-column:2!important;min-width:0!important}
+.wrap>section,.wrap>.panel{grid-column:2!important;grid-row:2!important;min-width:0!important}
 .panel{margin-top:20px!important}
 .card-box,.map-card,.league-card,.badges-card,.profile-card,.profile-hero,.feature-hero,.study-card,.shop-item,.season-banner,.challenge-board-wrap,.result-hero-pro,.admin-v2-box{background:linear-gradient(180deg,rgba(13,30,50,.95),rgba(8,20,34,.985))!important;border:1px solid var(--d-line-soft)!important;box-shadow:0 10px 28px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.02)!important;color:var(--d-text)!important}
 .map-card,.profile-card,.profile-hero,.feature-hero,.league-card,.badges-card{border-radius:15px!important}
